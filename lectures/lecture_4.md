@@ -1,11 +1,10 @@
 # Lecture 4: Generative AI for Transportation
 
-**Lecture link:**
+Lecture links:
 
-- **Section 1:** 
-- **Section 2:** 
-- **Section 3:** 
-- **Section 4:** 
+- [**Section 1:** AI to Understand Bus Operators' Preferences](https://youtu.be/ESqUjX_PLh4)
+- [**Section 2:** AI for Generative Urban Design](https://youtu.be/YktMW9raePg)
+- [**Section 3:** AI for Mobility Trajectory Generation](https://youtu.be/w6yHN9g4RQ0)
 
 # Automatic Transcript
 

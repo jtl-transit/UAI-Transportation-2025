@@ -1,6 +1,6 @@
 # Lecture 1: Introduction
 
-**Lecture link:**
+Lecture links:
 
 - [**Section 1:** Introduction](https://youtu.be/XkjXAa03G98)
 - [**Section 2:** AI Models and Approaches](https://youtu.be/1tPa6VCPuEM)

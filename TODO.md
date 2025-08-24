@@ -1,5 +1,5 @@
 # Lectures
-- [ ] Copy all transcripts from youtube
+- [X] Copy all transcripts from youtube
 - [ ] Add all the links to the various subsections
 - [ ] Watch all of the lectures to make sure, that there is no moved content
 

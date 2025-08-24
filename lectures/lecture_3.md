@@ -1,10 +1,10 @@
 # Lecture 3: Case Studies
 
-**Lecture link:**
+Lecture links:
 
-- [**Section 1: AI to Detect Platform Crowding**](https://youtu.be/ESqUjX_PLh4) 
-- [**Section 2: AI for Bus & Train Dispatching Control**](https://youtu.be/DlfkRDiM_Ag)
-- [**Section 3: AI to Understand Bus Operators' Preferences**](https://youtu.be/nuhq70FWPRM)
+- [**Section 1:** AI to Detect Platform Crowding](https://youtu.be/ESqUjX_PLh4) 
+- [**Section 2:** AI for Bus & Train Dispatching Control](https://youtu.be/DlfkRDiM_Ag)
+- [**Section 3:** AI to Understand Bus Operators' Preferences](https://youtu.be/nuhq70FWPRM)
 
 # Automatic Transcript
 
