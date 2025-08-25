@@ -1,5 +1,7 @@
 # MIT Urban AI 2025 Course | Transportation - AI for Transportation: From concepts to implementation
 
+![Course Title Page](./lectures/lecture_title_page.jpg)
+
 **Course Link:** 
 
 Welcome to the MIT Open Learning Urban AI (UAI) course! This section is presented by Professor Jinhua Zhao, professor for cities and transportation at the MIT Department of Urban Studies and Planning (DUSP). Through a series of four lectures, we will cover the following topics:
