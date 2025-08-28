@@ -1,12 +1,7 @@
 [project]
-name = "code"
+name = "recitation_4"
 version = "0.1.0"
-description = "Add your description here"
+description = "Simple project for model weight conversion"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = [
-    "numpy>=2.3.2",
-    "packaging>=25.0",
-    "safetensors>=0.6.2",
-    "torch>=2.8.0",
-]
+dependencies = []
