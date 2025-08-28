@@ -9,20 +9,184 @@
 \usepackage{xcolor}
 \usepackage{enumerate}
 \usepackage{hyperref}
+\usepackage{url}
 
 % Document
-\title{Homework 2: Discrete Choice Modeling}
+\title{Homework 3: Multimodal Machine Learning for Transit Data}
+\author{Riccardo Fiorista}
+\date{August 30, 2025}
 
 \begin{document}
 \maketitle
 
 \section*{Lecture Summary}
 
+Lecture 3 highlighted real-world applications of AI in public transportation, drawing on case studies from MIT’s decade-long collaborations with major transit authorities worldwide (TfL, CTA, Hong Kong MTR, MBTA, Singapore LTA, WMATA). The lecture illustrated how AI progresses from theory to practice across three domains:  
+\textbf{performance analysis} (origin–destination flows, demand–capacity balance),  
+\textbf{behavioral insights} (customer segmentation, crowding effects), and  
+\textbf{decision support} (simulation, operations control, crew scheduling).
 
-\subsection*{Exercise 1: }
+\begin{itemize}
+    \item \textbf{Case Study 1 – Platform Crowding Detection:} Hong Kong MTR’s automation of manual passenger counts using AFC/AVL data and AI-based estimation; WMATA’s integration of CCTV computer vision with operational data, yielding a 30\% accuracy improvement, combined with selective resource allocation via reinforcement learning.
+
+    \item \textbf{Case Study 2 – Bus Dispatch Control:} The Chicago Transit Authority’s reinforcement learning system for terminal dispatching, reducing excess waiting time by 37\% and crowding by 5–20\%. The system explicitly accounted for driver compliance (averaging 40–50\%) and real-world operational constraints.
+
+    \item \textbf{Case Study 3 – Sentiment Analysis:} WMATA’s conversion of unstructured social media messages into structured operational insights. Tens of thousands of posts were analyzed for mode, route, location, time, sentiment, and demographic attributes, enabling systematic complaint tracking and policy evaluation.
+\end{itemize}
+
+Across all examples, the lecture emphasized human-in-the-loop system design, ethical AI practices (de-identification and privacy protection), and the progression from retrospective analysis to predictive analytics enabled by multimodal data integration.
+
+In this recitation, we will focus on Case Studies 1 and 3, guiding you through minimal viable implementations of their core AI functionalities. The exercises are organized in two sections: first on sentiment analysis (Case Study 3), and then on platform crowding detection (Case Study 1). All code is provided in a Google Colab notebook, enabling you to both read and execute it in a reproducible environment.
+
+\section*{Resources}
+
+\textbf{Colab Notebook:} Access the interactive implementation at:\\
+\url{https://colab.research.google.com/github/RicoFio/UAI-Transportation-2025/blob/main/recitations/recitation_3/recitation_3_code.ipynb}
+
+\section*{Exercise 1: Sentiment Analysis with MetRoBERTa}
+
+\begin{center}
+\fcolorbox{gray}{lightgray}{%
+\begin{minipage}{0.8\textwidth}
+\centering
+\textbf{\Large Apply transformer-based NLP models to analyze \\
+public opinions on a transit agency and extract operational insights}
+\end{minipage}%
+}
+\end{center}
+
+This exercise implements the sentiment analysis methodology from Case Study 3, where WMATA processes large volumes of social media messages to extract structured operational data. You'll work with three pre-trained BERT models: one trained to detect \textit{sentiment}, one for \textit{irony}, and one which we fine-tuned to identify the underlying, transit-related \textit{topics} of the post. This exercise is designed to help you understand how unstructured narrative data can be transformed into actionable insights.
+
+\subsection*{Technical Implementation}
+
+The respective notebook section implements the following pipeline:
+\begin{enumerate}[(a)]
+\item \textbf{Data Loading:} WMATA Twitter dataset (5,000 messages) with preprocessing
+\item \textbf{Model Architecture:} MetRoBERTa - a BERT model fine-tuned on transportation domain text
+\item \textbf{Feature Extraction:} Automated classification of:
+\begin{itemize}
+\item Mode (bus, train, metro)
+\item Route identification
+\item Location/stop extraction
+\item Time period inference
+\item Sentiment classification (positive, negative, sarcastic, neutral)
+\item Topic categorization (schedule, cleanliness, safety, facilities)
+\end{itemize}
+\item \textbf{Analysis Pipeline:} Aggregate insights and trend detection
+\end{enumerate}
+
+\subsection*{Instructions}
+\begin{enumerate}[(a)]
+\item \textbf{Execute the Notebook:} Run through all cells in the Colab notebook, observing the model's performance on different types of transit-related text
+\item \textbf{Analyze Model Outputs:} Examine how the transformer model handles:
+\begin{itemize}
+\item Sarcasm detection (e.g., ``nice trash pile to start my morning'')
+\item Multi-attribute extraction from complex sentences
+\item Domain-specific transportation terminology
+\end{itemize}
+\item \textbf{Performance Assessment:} Evaluate the model's accuracy across different categories and identify potential failure modes
+\item \textbf{Data Quality Analysis:} Consider how the quality and representativeness of social media data affects operational decision-making
+\end{enumerate}
+
+\noindent\textbf{Format:} Document your observations and analysis of the model's performance, particularly noting how well it captures the nuances Professor Zhao discussed regarding converting this type of data into structured operational insights. We will follow up with some multiple-choice questions throughout the recitation videos.
 
 
-\subsection*{Exercise 2: }
+\section*{Exercise 2: Computer Vision for Crowding Detection}
 
+\begin{center}
+\fcolorbox{gray}{lightgray}{%
+\begin{minipage}{0.8\textwidth}
+\centering
+\textbf{\Large Implement semantic segmentation approaches for \\
+automated passenger density estimation in transit stations}
+\end{minipage}%
+}
+\end{center}
 
-\subsection*{Exercise 3: }
+This exercise replicates the computer vision methodology from Case Study 1, where WMATA integrated CCTV analysis with operational data to improve crowding predictions by 30\%. You'll work with station video data that we manually sampled in the city of Vienna, Austria, to understand how image segmentation can estimate passenger density.
+
+\subsection*{Technical Implementation}
+In the same Colab notebook, you will find a section that contains the computer vision implementation with:
+\begin{enumerate}[(a)]
+\item \textbf{Video Data:} Vienna Metro station footage showing varying crowd densities over 10 minutes
+\item \textbf{Segmentation Model:} Pre-trained semantic segmentation network for person detection
+\item \textbf{Density Estimation:} Area-based crowd density calculation (not individual tracking)
+\item \textbf{Temporal Analysis:} Frame-by-frame crowding progression over time
+\end{enumerate}
+
+\subsection*{Instructions}
+\begin{enumerate}[(a)]
+\item \textbf{Inspect Data:} Observe what data is given to you, how it is loaded and preprocessed
+\item \textbf{Run Segmentation Pipeline:} Execute the computer vision cells and observe how the model segments crowd areas
+\item \textbf{Analyze Density:} Examine how pixel-based area calculations translate to passenger density estimates
+\item \textbf{Continuous Inference:} Understand why we modified our inference pipeline from a per-frame (every image in a video) to a one-image-per-second approach
+\item \textbf{Evaluate Computational Trade-offs:} Consider the balance between \textit{accuracy} (i.e., \textit{how often to sample an image} and at what \textit{threshold}) and \textit{computational cost} that Professor Zhao discussed. In this particular case, can you think of a simpler approach?
+\item \textbf{Integration Challenges:} Think about how you would combine the continuous insight extracted from the vision data with other operational data sources (train delays, smart card usage, etc.)
+\end{enumerate}
+
+\noindent\textbf{Format:} Reflect on the computer vision approach, including its strengths, limitations, and practical deployment considerations for real-world transit operations. We will follow up with some multiple-choice questions throughout the recitation videos.
+
+\section*{Exercise 3: Applying Multimodal AI to Your Domain}
+
+\begin{center}
+\fcolorbox{gray}{lightgray}{%
+\begin{minipage}{0.8\textwidth}
+\centering
+\textbf{\Large Design a multimodal AI system for your field/industry \\
+that integrates text and visual data sources}
+\end{minipage}%
+}
+\end{center}
+
+Drawing from Professor Zhao's three case studies and your hands-on experience with the NLP and computer vision implementations, conceive, either mentally or by reusing some of the code, a comprehensive AI system for your chosen domain, potentially the one you worked on in Homework 1, that demonstrates the principles of grounded AI deployment.
+
+\subsection*{System Design Requirements}
+Your proposed system should address:\\
+
+\noindent\textbf{Problem Definition:}
+\begin{itemize}
+\item Identify a specific operational challenge in your field analogous to crowding detection, service reliability, or sentiment analysis
+\item Define clear success metrics and operational constraints
+\item Consider stakeholder needs across operational, tactical, and strategic levels
+\end{itemize}
+
+\noindent\textbf{Multimodal Data Integration:}
+\begin{itemize}
+\item \textbf{Structured Data:} Equivalent to fare collection (Automatic Fare Collection, AFC) or operational log (such as Automatic Vehicle Location, AVL) systems in your domain
+\item \textbf{Text Data:} Social media, customer feedback, or operational communications
+\item \textbf{Visual Data:} Security cameras, satellite imagery, or sensor networks
+\item \textbf{Contextual Data:} Weather, events, temporal patterns
+\end{itemize}
+
+\noindent\textbf{Technical Architecture:}
+\begin{itemize}
+\item \textbf{Data Pipeline:} How the different data sources are ingested and processed
+\item \textbf{AI Components:} Which of the five AI functions (represent, predict, explain, control, create) your system employs
+\item \textbf{Human-in-the-Loop Design:} Where human oversight and decision-making remain critical
+\item \textbf{Computational Efficiency:} When to use expensive AI components vs. simpler methods
+\end{itemize}
+
+\subsection*{Implementation Considerations}
+Address the practical challenges Professor Zhao highlighted:
+
+\begin{enumerate}[(a)]
+\item \textbf{Compliance and Adoption:} How will you handle variable user compliance (like the 40--50\% driver compliance in Chicago)?
+\item \textbf{Ethical Deployment:} What privacy protections and de-identification measures are necessary?
+\item \textbf{Organizational Integration:} How would your system fit into existing workflows and institutional culture?
+\item \textbf{Scalability:} Path from pilot implementation to system-wide deployment
+\item \textbf{Cross-Cultural Learning:} How could your approach be adapted across different contexts or organizations?
+\end{enumerate}
+
+\subsection*{Reflection on Grounded AI Principles}
+Demonstrate how your system embodies the grounded AI characteristics:
+\begin{itemize}
+\item \textbf{Problem-driven:} Addresses real operational needs, not just technical capabilities
+\item \textbf{Context-aware:} Considers institutional, cultural, and social factors
+\item \textbf{Deployment-ready:} Designed for real-world implementation with practical constraints
+\item \textbf{Iterative:} Plan for co-creation and refinement with stakeholders
+\item \textbf{Explainable:} Can be understood and trusted by non-technical decision-makers
+\end{itemize}
+
+\noindent\textbf{Format:} Reflect on how a technical proposal could be presented to decision-makers in your field, balancing technical sophistication with practical implementation considerations. Include a system diagram showing the integration of different data modalities and AI components.
+
+\end{document}

@@ -94,8 +94,6 @@ Next, I’ll discuss what a transportation system is, what changes are happening
 
 ## Section 2: AI Models and Approaches
 
-### Transcript: Section Two — The Transportation System  
-
 ### What is Transportation?  
 Transportation is the **movement of people and goods.**  
 It covers a wide range of activities:  
