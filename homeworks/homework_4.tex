@@ -9,20 +9,144 @@
 \usepackage{xcolor}
 \usepackage{enumerate}
 \usepackage{hyperref}
+\usepackage{url}
+\usepackage{fancyhdr}
+
+% Header setup
+\pagestyle{fancy}
+\fancyhf{} % Clear all header and footer fields
+\fancyhead[L]{MIT Open Learning - Universal AI}
+\fancyhead[R]{Transportation}
+\renewcommand{\headrulewidth}{2pt} % Thick black line
+\renewcommand{\footrulewidth}{0pt} % No footer line
 
 % Document
-\title{Homework 4: Generative Urban AI}
+\title{Homework 4: Generative AI for Urban Transportation Systems}
+\author{Riccardo Fiorista | \href{mailto:riccardo-uai@mit.edu}{riccardo-uai@mit.edu}}
+\date{September, 2025}
 
 \begin{document}
 \maketitle
+\thispagestyle{fancy} % Ensure header appears on title page
 
 \section*{Lecture Summary}
 
+Lecture 4 explored generative AI applications in transportation through three interconnected case studies that demonstrate how AI can create rather than just predict or analyze. The lecture showcased the evolution from traditional AI functions (represent, predict, explain, control) to the emerging \textbf{create} function, marking a paradigm shift toward AI as a generative partner in transportation planning and operations.
 
-\subsection*{Exercise 1: }
+The case studies illustrated different scales and applications of generative AI:
 
+\textbf{Case Study 1: Bus Operator Preference Analysis} -- Leveraging natural language processing to understand human factors in transportation operations, analyzing driver preferences and operational constraints to improve system design and workforce management.
 
-\subsection*{Exercise 2: }
+\textbf{Case Study 2: Generative Urban Design} -- Using conditional diffusion models (Stable Diffusion + ControlNet) with OpenStreetMap data to enable real-time urban planning. The system allows planners to specify land-use proportions (e.g., 35\% residential, 15\% commercial, 10\% parks), respect existing infrastructure (rivers, railways, roads), and apply different urban textures (Chicago vs. Dallas vs. Los Angeles styles). This transforms traditional planning from a months-long iterative process to immediate, interactive public engagement.
 
+The lecture emphasized human-centered AI design with multi-stage human-in-the-loop frameworks, addressing both opportunities (scalability, personalization, creative design) and concerns (resource requirements, workforce impact, equity risks, transparency issues) in generative AI deployment for transportation systems.
 
-\subsection*{Exercise 3: }
+\section*{Resources}
+
+\textbf{Colab Notebook:} Access the interactive implementation at:\\
+\url{https://colab.research.google.com/github/RicoFio/UAI-Transportation-2025/blob/main/recitations/recitation_4/Recitation_4_Code.ipynb}
+
+\section*{Exercise 1: Urban Design with Conditional Diffusion Models}
+
+\begin{center}
+\fcolorbox{gray}{lightgray}{%
+\begin{minipage}{0.8\textwidth}
+\centering
+\textbf{\Large Implement ControlNet-based generative models for \\
+urban planning with spatial and textual constraints}
+\end{minipage}%
+}
+\end{center}
+
+This exercise implements the generative urban design methodology from Case Study 2, where AI enables real-time urban planning through conditional diffusion models. You'll work with a pre-trained ControlNet model that combines text prompts with spatial condition images to generate urban layouts that respect both planning objectives and physical constraints.
+
+\subsection*{Technical Implementation}
+
+The notebook implements Professor Zhao's three key planner requirements:
+\begin{enumerate}[(a)]
+\item \textbf{Model Setup:} Loading pre-trained ControlNet weights and initializing the diffusion pipeline
+\item \textbf{Land-Use Control:} Specifying precise proportions (e.g., 35\% residential, 15\% commercial, 10\% parks)
+\item \textbf{Infrastructure Preservation:} Respecting existing rivers, railways, and road networks from OpenStreetMap data
+\item \textbf{Urban Texture Application:} Learning and applying different city styles while maintaining constraints
+\item \textbf{Parameter Optimization:} Adjusting diffusion steps, guidance scale, and control strength for optimal generation
+\end{enumerate}
+
+\subsection*{Instructions}
+\begin{enumerate}[(a)]
+\item \textbf{Execute the Generation Pipeline:} Run through the ControlNet implementation, observing how text prompts and control images guide the diffusion process
+\item \textbf{Analyze Control Mechanisms:} Examine how the model balances:
+\begin{itemize}
+\item Land-use proportion adherence vs. spatial realism
+\item Infrastructure preservation vs. design flexibility
+\item Style consistency vs. local adaptation
+\end{itemize}
+\item \textbf{Parameter Sensitivity Analysis:} Experiment with different guidance scales and control strengths to understand their impact on generation quality
+\item \textbf{Evaluation Metrics:} Compare generated outputs with ground truth imagery using both qualitative assessment and quantitative metrics
+\item \textbf{Computational Trade-offs:} Consider the balance between generation quality and inference time as discussed in the lecture
+\end{enumerate}
+
+\noindent\textbf{Goal:} Understand how conditional diffusion models enable the immediate, interactive urban planning that Professor Zhao demonstrated, transforming traditional planning timelines from months to minutes while maintaining design quality and constraint satisfaction.
+
+\section*{Exercise 2: Generative AI System Design for Your Domain}
+
+\begin{center}
+\fcolorbox{gray}{lightgray}{%
+\begin{minipage}{0.8\textwidth}
+\centering
+\textbf{\Large Design a comprehensive generative AI system \\
+for creating novel solutions in your field/industry}
+\end{minipage}%
+}
+\end{center}
+
+Drawing from Professor Zhao's case studies and your hands-on experience with conditional diffusion models in urban design, design a generative AI system for your chosen domain (potentially building on your work from Homeworks 1 and 3) that demonstrates the \textbf{create} function of AI in addressing real-world challenges.
+
+\subsection*{System Design Requirements}
+Your proposed generative system should address:
+
+\noindent\textbf{Creative Problem Definition:}
+\begin{itemize}
+\item Identify a domain challenge where \textit{generation} of novel solutions (rather than prediction or classification) is needed
+\item Define what constitutes ``good'' generated outputs in your domain
+\item Consider stakeholder needs for both control and creativity
+\end{itemize}
+
+\noindent\textbf{Technical Architecture:}
+\begin{itemize}
+\item \textbf{Generative Model Choice:} Diffusion models, GANs, transformers, or hybrid approaches
+\item \textbf{Conditioning Mechanisms:} How users specify constraints and preferences
+\item \textbf{Multi-Modal Integration:} Combining text, images, structured data, or domain-specific inputs
+\item \textbf{Quality Control:} Ensuring generated outputs meet domain requirements and constraints
+\end{itemize}
+
+\noindent\textbf{Human-AI Collaboration Framework:}
+\begin{itemize}
+\item \textbf{Multi-Stage Generation:} Following Professor Zhao's step-wise human-in-the-loop approach
+\item \textbf{Real-Time Interaction:} Enabling immediate iteration like the urban planning example
+\item \textbf{Expert Integration:} Maintaining professional judgment and domain expertise
+\item \textbf{Public Engagement:} Democratizing access to generative capabilities (if applicable)
+\end{itemize}
+
+\subsection*{Implementation Considerations}
+Address the opportunities and concerns Professor Zhao highlighted:
+
+\begin{enumerate}[(a)]
+\item \textbf{Scalability vs. Quality:} How will you balance computational requirements with generation quality?
+\item \textbf{Creativity vs. Control:} How do you enable novel generation while respecting domain constraints?
+\item \textbf{Equity and Access:} How does your system avoid marginalizing certain groups through personalization?
+\item \textbf{Transparency:} How can you make the generative process interpretable for domain experts?
+\item \textbf{Workforce Impact:} How does your system augment rather than replace human expertise?
+\end{enumerate}
+
+\subsection*{Technical Validation}
+Design evaluation frameworks that assess:
+\begin{itemize}
+\item \textbf{Technical Quality:} Fidelity, diversity, and constraint satisfaction of generated outputs
+\item \textbf{Domain Validity:} Expert assessment of generated solutions' feasibility and appropriateness
+\item \textbf{User Experience:} Effectiveness of human-AI collaboration in your proposed workflow
+\item \textbf{Innovation Potential:} Ability to generate novel solutions beyond traditional approaches
+\end{itemize}
+
+\noindent\textbf{Goal:} Synthesize the generative AI principles from the lecture into a comprehensive system design that demonstrates how the \textbf{create} function of AI can transform practice in your chosen domain while addressing the ethical and practical challenges Professor Zhao discussed. Include a system diagram showing the generative pipeline, conditioning mechanisms, and human interaction points.
+
+\end{document}

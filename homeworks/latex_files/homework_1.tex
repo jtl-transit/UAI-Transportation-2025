@@ -9,33 +9,53 @@
 \usepackage{xcolor}
 \usepackage{enumerate}
 \usepackage{hyperref}
+\usepackage{url}
+\usepackage{fancyhdr}
+
+% Header setup
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{MIT Open Learning - Universal AI}
+\fancyhead[R]{Transportation}
+\renewcommand{\headrulewidth}{2pt}
+\renewcommand{\footrulewidth}{0pt}
 
 % Document
 \title{Homework 1: Introduction to AI for Transportation}
+\author{Riccardo Fiorista | \href{mailto:riccardo-uai@mit.edu}{riccardo-uai@mit.edu}}
+\date{August, 2025}
 
 \begin{document}
 \maketitle
+\thispagestyle{fancy}
 
 \section*{Lecture Summary}
 
 Professor Zhao's lecture introduced AI for Transportation through four key sections: defining success vs. progress, understanding transportation systems and data, real-world grounded AI applications, and generative AI opportunities.
 
-The central challenge: technological progress doesn't automatically equal success. Beijing's transformation from sustainable bicycles to car-dominated congestion exemplifies this paradox. Despite technological advances, transportation faces 42,915 annual US traffic fatalities (vs. zero airline deaths), 28\% of greenhouse gas emissions, and persistent accessibility issues.
+The central challenge: technological progress doesn't automatically equal success. Beijing's transformation from sustainable bicycles to car-dominated congestion exemplifies this paradox. Despite technological advances, transportation faces 42,915 annual US traffic fatalities (vs. 120 airline deaths in 2023), 28\% of greenhouse gas emissions, and persistent accessibility issues.
 
 The course bridges \textbf{behavioral thinking} (travel as social, emotional, perceptual) with \textbf{computational thinking} (data, algorithms, AI) to create truly successful transportation systems. These exercises focus on the subjective, value-driven aspects of applying AI responsibly in your chosen domain.
 
 \section*{Exercise 1: Defining Success}
 
 \begin{center}
-\textbf{\Large Define success \& the future for your field/industry/community \\
-in the light of: Data, AI, and Behavior}
+\fcolorbox{gray}{lightgray}{%
+\begin{minipage}{0.6\textwidth}
+\centering
+\vspace{3mm}
+\Large Define success \& the future for your field/industry/community \\
+in the light of: Data, AI, and Behavior
+\vspace{3mm}
+\end{minipage}%
+}
 \end{center}
 
 Prof. Zhao showed how progress doesn't equal success using Beijing's shift from sustainable transport to car-dominated congestion. Success requires defining metrics before introducing new technologies.
 
 Choose a field you know well and analyze three aspects: \textit{current state}, \textit{desired future}, and what makes the transition a \textit{success}. Move beyond economic benefits to consider data, AI, and behavioral dimensions across safety, sustainability, equity, and efficiency.
 
-\subsection{Instructions:}
+\subsection*{Instructions:}
 \begin{enumerate}[(a)]
 \item \textbf{Choose your domain:} Select a field, industry, or community where you have substantial knowledge or experience.
 
@@ -61,9 +81,21 @@ Choose a field you know well and analyze three aspects: \textit{current state}, 
 \end{itemize}
 \end{enumerate}
 
-\textbf{Format:} Write a 750-1000 word reflection addressing all three components above.
+\noindent\textbf{Goal:} Reflect on the three components above.
 
 \section*{Exercise 2: Systems Thinking and Analytics Framework}
+
+\begin{center}
+\fcolorbox{gray}{lightgray}{%
+\begin{minipage}{0.6\textwidth}
+\centering
+\vspace{3mm}
+\Large Create a similar analytics framework diagram \\
+for your chosen field/industry/community
+\vspace{3mm}
+\end{minipage}%
+}
+\end{center}
 
 \begin{figure}[h]
 \centering
@@ -84,16 +116,11 @@ Choose a field you know well and analyze three aspects: \textit{current state}, 
 \label{fig:frameworks}
 \end{figure}
 
-\begin{center}
-\textbf{\Large Create a similar analytics framework diagram \\
-for your chosen field/industry/community}
-\end{center}
-
-Prof. Zhao's framework shows how Transportation Analytics connects supply/demand through offline (planning) and real-time (operations) functions. Transport for London's evolution from manual surveys to smart cards to multimodal data fusion demonstrates the shift toward predictive analytics.
+The framework illustrated in \autoref{fig:transport} shows how Transportation Analytics connects supply/demand through offline (planning) and real-time (operations) functions. Transport for London's evolution from manual surveys to smart cards to multimodal data fusion, as discussed in the lecture, demonstrates the shift toward predictive analytics.
 
 Cities exist through multiple channels - numbers, graphs, images, language - and AI's power lies in unifying these data modalities.
 
-\subsection{Instructions:}
+\subsection*{Instructions:}
 \begin{enumerate}[(a)]
 \item \textbf{Adapt the Framework:} Using the transportation analytics framework as inspiration, create a similar diagram for your chosen domain from Exercise 1. Your framework should include:
 \begin{itemize}
@@ -122,7 +149,7 @@ Cities exist through multiple channels - numbers, graphs, images, language - and
 \end{itemize}
 \end{enumerate}
 
-\textbf{Format:} Create a clear diagram (hand-drawn is acceptable) and write a 500-750 word explanation of your framework, including how it addresses the multi-channel nature of your domain (numbers, images, language, graphs). 
+\noindent\textbf{Goal:} Create a clear diagram (hand-drawn is fine) and reflect on your framework as if you would need to explain it to someone in your field. Include in your rationale, how it addresses the multi-channel nature of your domain (numbers, images, language, graphs). 
 
 \section*{Exercise 3: Grounded AI Application}
 
@@ -130,7 +157,7 @@ Grounded AI is problem-driven (not technology-driven), context-aware, human-in-t
 
 Examples include sentiment analysis (D.C. transit), crowd detection, bus dispatching optimization (Chicago), and workforce planning.
 
-\subsection{Instructions:}
+\subsection*{Instructions:}
 \begin{enumerate}[(a)]
 \item \textbf{Identify a Specific Problem:} Within your chosen domain, identify a concrete problem that could benefit from AI intervention. The problem should be:
 \begin{itemize}
@@ -165,13 +192,13 @@ Examples include sentiment analysis (D.C. transit), crowd detection, bus dispatc
 \end{itemize}
 \end{enumerate}
 
-\textbf{Format:} Write a 600-800 word proposal for your grounded AI application, structured as a brief for a non-technical decision-maker who needs to understand both the technical approach and its human implications.
+\noindent\textbf{Goal:} Reflect on how a proposal for your grounded AI application could look like. Think of a structure that is brief and accessible for a non-technical decision-maker who needs to understand both the technical approach and its human implications.
 
 \section*{Exercise 4: Communication and Reflection}
 
 Effective communication translates complex AI concepts for diverse stakeholders. Professor Zhao demonstrated this through clear frameworks, compelling examples (Beijing comparison), and structured problem-solution thinking.
 
-\subsection{Instructions:}
+\subsection*{Instructions:}
 \begin{enumerate}[(a)]
 \item \textbf{Create a Stakeholder Communication Plan:} For your grounded AI application from Exercise 3, develop communication strategies for three different audiences:
 \begin{itemize}
@@ -191,6 +218,6 @@ Effective communication translates complex AI concepts for diverse stakeholders.
 \end{itemize}
 \end{enumerate}
 
-\textbf{Format:} Write a 400-600 word communication plan and reflection that demonstrates your ability to translate technical AI concepts into accessible language for diverse audiences.
+\noindent\textbf{Goal:} Reflect on how you can translate technical AI concepts into accessible language for diverse audiences.
 
 \end{document}

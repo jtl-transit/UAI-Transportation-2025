@@ -28,7 +28,6 @@ Through these collaborations, we’ve seen different reactions: some ideas were 
 
 This global experience allowed us to facilitate what I call **cross-cultural learning.** MIT doesn’t just produce scholarship—it also acts as a conduit, bringing ideas from one city to another, refining them, and enabling shared progress.  
 
----
 
 ### Research Categories  
 We categorize our research into three major areas:  
@@ -47,7 +46,6 @@ We categorize our research into three major areas:
    - Operations control tools  
    - Crew scheduling and labor systems  
 
----
 
 ### Application Levels  
 We also think about applications across three levels:  
@@ -68,7 +66,6 @@ We also think about applications across three levels:
 
 Our research and applications bridge all three levels—operational, tactical, and strategic.  
 
----
 
 ### Examples: Transport for London  
 Working with TfL, we’ve contributed at multiple levels:  
@@ -88,7 +85,6 @@ Working with TfL, we’ve contributed at multiple levels:
   - Integration of AVs with public transit  
   - Demand-responsive transit improvements  
 
----
 
 ### Case Studies (Three Examples)  
 Today I’ll share three real-world examples of AI applications:  
@@ -97,7 +93,6 @@ Today I’ll share three real-world examples of AI applications:
 2. **Service reliability and bus bunching prevention**  
 3. **Understanding bus operator preferences**  
 
----
 
 ### Case Study 1: Platform Crowding Detection  
 
@@ -121,7 +116,6 @@ Results:
 - Automated predictions aligned well with manual surveys.  
 - Enabled **real-time customer information systems** and **government reporting** at scale and near-zero marginal cost.  
 
----
 
 #### Example: Washington, D.C. WMATA  
 Data sources used:  
@@ -147,7 +141,6 @@ Data sources used:
    - AI was trained to trigger CCTV use only when prediction uncertainty was high.  
    - Balanced accuracy with resource efficiency.  
 
----
 
 ### Observations  
 
@@ -161,7 +154,6 @@ Prediction relies on historical patterns. We learned three lessons:
 2. **History can be selective.** Only use the most relevant historical data for current conditions.  
 3. **History is decomposable.** Even if exact events don’t repeat, components of history can be recombined to predict the future.  
 
----
 
 ### Closing Thought  
 By integrating operational data, computer vision, and selective AI-driven prediction, we can not only detect and predict crowding but also deliver safer, more efficient, and more customer-friendly transit systems.  
@@ -184,7 +176,6 @@ Buses are scheduled to come every 15 minutes, but disturbances—a red light, a 
 
 Bus bunching happens **everywhere, all the time.**  
 
----
 
 #### Control Strategy  
 The solution: **dispatch control at the terminal.**  
@@ -194,7 +185,6 @@ The solution: **dispatch control at the terminal.**
 
 Traditionally, this can be done using heuristics. But we explored a more advanced method: **reinforcement learning (RL).**  
 
----
 
 #### The Pandemic and Driver Shortages  
 During COVID, service reliability got even worse due to:  
@@ -205,7 +195,6 @@ At the Chicago Transit Authority (CTA), only **84% of promised service** was del
 
 This made the bunching problem worse—and made the case for AI-driven solutions even stronger.  
 
----
 
 #### Reinforcement Learning Framework  
 - **Agent:** the control center.  
@@ -215,7 +204,6 @@ This made the bunching problem worse—and made the case for AI-driven solutions
 
 The RL system learns which actions improve service reliability under uncertainty (demand, supply, traffic, compliance).  
 
----
 
 #### Human in the Loop (Phase 1: Route Selection)  
 When we first proposed this project with CTA, we identified **Bus Route 20**—high demand, unreliable service.  
@@ -226,7 +214,6 @@ Instead, CTA recommended **Route 81**—similar demand and reliability issues, b
 
 This was a critical **lesson in human-in-the-loop AI.** AI systems must respect local knowledge and culture.  
 
----
 
 #### Human in the Loop (Phase 2: Real-Time Recommendations)  
 We developed a real-time recommendation system:  
@@ -238,7 +225,6 @@ Key point: this is **not automated dispatching.**
 - AI recommends.  
 - Supervisors and drivers **decide and execute.**  
 
----
 
 #### Human in the Loop (Phase 3: Field Experiment)  
 We piloted this on **Route 81** (north Chicago, 7,500 weekday riders, 6–9 minute headways, 15–25% missed trips due to driver shortage).  
@@ -251,7 +237,6 @@ MIT researchers embedded within CTA worked closely with:
 
 With support from leadership to frontline staff, the pilot was possible.  
 
----
 
 #### Results: Service Reliability  
 
@@ -268,7 +253,6 @@ With support from leadership to frontline staff, the pilot was possible.
 - 90th percentile cycle time reduced by **2.5 minutes.**  
 - Improved efficiency, less wasted resource.  
 
----
 
 #### Compliance: Do Drivers Listen?  
 The big question: **do drivers follow AI recommendations?**  
@@ -282,7 +266,6 @@ Results showed:
 
 **Lesson:** assuming 100% compliance is unrealistic. Driver behavior must be built into the model.  
 
----
 
 #### Phase 2 Research: Embedding Compliance into AI  
 - Next step: embed **driver response patterns** into the algorithm.  
@@ -293,21 +276,18 @@ We are moving from pilot (MIT-led) to **deployment (CTA staff-led).**
 - Scaling from one route to multiple routes.  
 - Expanding time periods of operation.  
 
----
 
 #### Scaling Beyond Chicago  
 MIT now coordinates a **Transit Research Consortium** with seven major U.S. transit agencies.  
 - Sharing lessons from CTA.  
 - Helping other cities adopt this methodology.  
 
----
 
 #### Human in the Loop: Three Levels  
 1. **Control level** – drivers receive recommendations but make final decisions.  
 2. **Garage level** – culture matters; some garages are more open to AI guidance than others.  
 3. **Organizational level** – broad support (executives to drivers) is essential for success.  
 
----
 
 #### Conclusion on Bus Reliability AI  
 - AI can **substantively improve reliability** without adding buses or drivers.  
@@ -328,7 +308,6 @@ WMATA (Washington Metropolitan Area Transit Authority) often receives social med
 
 This is valuable information, but WMATA receives **tens of thousands** of such messages. How can agencies systematically process them?  
 
----
 
 #### From Narrative to Structured Data  
 We developed AI methods to **decode unstructured text into structured data.**  
@@ -356,7 +335,6 @@ This sarcastic message is classified as:
 
 Modern AI can now handle sarcasm, which older systems could not.  
 
----
 
 #### Methodology  
 Our system can decode unstructured data from:  
@@ -370,7 +348,6 @@ AI extracts attributes such as:
 - Sentiment level (positive, negative, sarcastic, neutral)  
 - Demographic inferences  
 
----
 
 #### Applications of the Classification System  
 With structured data, agencies can:  
@@ -389,7 +366,6 @@ Categories of classification include:
 
 Each is broken into 23 subtopics, allowing agencies to assign responsibility to the right department.  
 
----
 
 #### Examples of Insights  
 - **Complaint classification:**  
@@ -404,7 +380,6 @@ Each is broken into 23 subtopics, allowing agencies to assign responsibility to 
 
 This tool is now deployed across WMATA, with staff using it weekly to track sentiment and feedback.  
 
----
 
 #### Broader Observation: What Counts as Data?  
 Traditionally, transportation agencies treated only **structured, numerical data** (e.g., ridership counts, travel times) as “real” data.  
@@ -417,7 +392,6 @@ But valuable information also exists in:
 
 For decades, agencies ignored this unstructured data because they lacked the tools to process it. With AI, we can now integrate qualitative data into operational decision-making, giving these voices the respect they deserve.  
 
----
 
 #### MIT–Industry Innovation Pipeline  
 At MIT, our collaborations with industry follow a cycle:  
@@ -434,7 +408,6 @@ At MIT, our collaborations with industry follow a cycle:
 4. **Feedback loop**  
    - MIT and partners monitor effectiveness, generating new ideas for future innovation.  
 
----
 
 #### Three Levels of Contribution  
 MIT contributes to industry at three levels:  
@@ -451,7 +424,6 @@ MIT contributes to industry at three levels:
      - MIT helped set up TfL’s analytics team to unify data sources.  
      - Beyond technical innovation, this work strengthened TfL’s organizational identity and cohesion.  
 
----
 
 #### Conclusion  
 AI sentiment analysis allows agencies to tap into unstructured feedback from riders, transforming complaints and comments into actionable insights.  

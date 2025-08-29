@@ -24,3 +24,7 @@ We will be using the following data. However, in the CoLab notebook, we have alr
 - [**True TIF:**](https://drive.google.com/open?id=1xv3bfbdl9gtKDJ8XvS3m5zGi8Zn1-uAz&usp=drive_copy) Ground-truth data, following the `Hint TIF` and matching with the prompt in `recitation_4_code.ipynb`.
 - [**Model checkpoint:**](https://drive.google.com/open?id=1hO409B3i3kOWAspsSIfof7FogSnk1RNX&usp=drive_copy) Training checkpoint of model, including weights.
 - [**Model configuration:**](https://drive.google.com/open?id=1Fgb3Cofs6Mc9mNqXk1BW9Io5Iud2V8un&usp=drive_copy) Information on model architecture and computational pipeline.
+
+## Preparation
+
+In the `./code/` folder, you can find the scripts we have used to *quantize* the model, i.e. reduce the precision of the weight values from a 64-bit float to a 16-bit float, allowing us to have more light-weight models with similar performance.

@@ -10,14 +10,24 @@
 \usepackage{enumerate}
 \usepackage{hyperref}
 \usepackage{url}
+\usepackage{fancyhdr}
+
+% Header setup
+\pagestyle{fancy}
+\fancyhf{} % Clear all header and footer fields
+\fancyhead[L]{MIT Open Learning - Universal AI}
+\fancyhead[R]{Transportation}
+\renewcommand{\headrulewidth}{2pt} % Thick black line
+\renewcommand{\footrulewidth}{0pt} % No footer line
 
 % Document
 \title{Homework 3: Multimodal Machine Learning for Transit Data}
-\author{Riccardo Fiorista}
-\date{August 30, 2025}
+\author{Riccardo Fiorista | \href{mailto:riccardo-uai@mit.edu}{riccardo-uai@mit.edu}}
+\date{August, 2025}
 
 \begin{document}
 \maketitle
+\thispagestyle{fancy}
 
 \section*{Lecture Summary}
 
@@ -88,7 +98,7 @@ The respective notebook section implements the following pipeline:
 \item \textbf{Data Quality Analysis:} Consider how the quality and representativeness of social media data affects operational decision-making
 \end{enumerate}
 
-\noindent\textbf{Format:} Document your observations and analysis of the model's performance, particularly noting how well it captures the nuances Professor Zhao discussed regarding converting this type of data into structured operational insights. We will follow up with some multiple-choice questions throughout the recitation videos.
+\noindent\textbf{Goal:} Reflect on your observations and analysis of the model's performance, particularly noting how well it captures the nuances Professor Zhao discussed regarding converting this type of data into structured operational insights. We will follow up with some multiple-choice questions throughout the recitation videos.
 
 
 \section*{Exercise 2: Computer Vision for Crowding Detection}
@@ -124,7 +134,7 @@ In the same Colab notebook, you will find a section that contains the computer v
 \item \textbf{Integration Challenges:} Think about how you would combine the continuous insight extracted from the vision data with other operational data sources (train delays, smart card usage, etc.)
 \end{enumerate}
 
-\noindent\textbf{Format:} Reflect on the computer vision approach, including its strengths, limitations, and practical deployment considerations for real-world transit operations. We will follow up with some multiple-choice questions throughout the recitation videos.
+\noindent\textbf{Goal:} Reflect on the computer vision approach, including its strengths, limitations, and practical deployment considerations for real-world transit operations. We will follow up with some multiple-choice questions throughout the recitation videos.
 
 \section*{Exercise 3: Applying Multimodal AI to Your Domain}
 
@@ -187,6 +197,6 @@ Demonstrate how your system embodies the grounded AI characteristics:
 \item \textbf{Explainable:} Can be understood and trusted by non-technical decision-makers
 \end{itemize}
 
-\noindent\textbf{Format:} Reflect on how a technical proposal could be presented to decision-makers in your field, balancing technical sophistication with practical implementation considerations. Include a system diagram showing the integration of different data modalities and AI components.
+\noindent\textbf{Goal:} Reflect on how a technical proposal could be presented to decision-makers in your field, balancing technical sophistication with practical implementation considerations. Include a system diagram showing the integration of different data modalities and AI components.
 
 \end{document}
