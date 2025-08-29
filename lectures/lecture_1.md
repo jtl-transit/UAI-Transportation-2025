@@ -29,7 +29,6 @@ How do we describe this picture in transportation planning jargon? We’d call i
 
 Yet Beijing, as a city, has deliberately moved away from this sustainable paradigm, toward the car-dominated model we see across much of the world today. So, as a profession, I would argue we’ve confused what “success” really means.  
 
----
 
 ### Three Questions  
 
@@ -46,7 +45,6 @@ As of 2022, the U.S. generated **6.3 billion tons of CO₂,** of which **1.8 bil
 **Question 3:** Is public transit affordable in Boston?  
 Many people think of Boston as a wealthy city, but in fact, many residents cannot afford bus fare.  
 
----
 
 ### Taking Stock  
 
@@ -58,7 +56,6 @@ So, are we truly successful? Let’s recap:
 
 Despite tremendous technological progress, these advances haven’t translated into a better transportation system.  
 
----
 
 ### Looking Ahead: What Defines the Future?  
 
@@ -78,7 +75,6 @@ The future lies in bringing these two dimensions together:
 - Transportation technologies—electrification, automation, connectivity, sharing.  
 - Computational foundations—data, algorithms, and AI.  
 
----
 
 ### Course Overview  
 
@@ -124,7 +120,6 @@ A transportation system is more than just roads and vehicles. It includes:
 
 All these elements together enable the delivery of mobility for people.  
 
----
 
 ### What’s Changing in Transportation?  
 The changes can be captured in three words: **technology, data, and value.**  
@@ -145,7 +140,6 @@ The changes can be captured in three words: **technology, data, and value.**
 
 This means transportation must now be understood in **multi-dimensional terms**—not just congestion and efficiency, but also sustainability, justice, identity, creativity, and public health.  
 
----
 
 ### A Case Study: Transport for London (TfL)  
 London offers a good example of how **data and analytics** have evolved in transportation.  
@@ -176,7 +170,6 @@ This data captures:
 
 With this richness of data, TfL is moving beyond retrospective analysis toward **real-time and predictive analytics.**
 
----
 
 ### A Multi-Channel View of Cities  
 Most of us know Plato’s *Allegory of the Cave*—that what we see is often only a shadow of reality. Cities can be understood in a similar way.  
@@ -191,7 +184,9 @@ Different professions use different lenses, and each perspective captures only p
 ### Opportunity with AI  
 Traditionally, prediction models in transportation look like this:  
 
-$$ P(Y \mid X) $$  
+   \[ 
+   P(Y \mid X)  
+   \] 
 
 where **Y** is the outcome (e.g., congestion, delay, car ownership) and **X** is the data—usually *numerical variables* (income, education, number of cars, miles of road).  
 
@@ -211,7 +206,6 @@ In this section, we’ll cover:
 3. The question of **“why now”**—why we are discussing AI applications in transportation today.  
 4. Finally, what we mean by **grounded AI.**  
 
----
 
 ### Transportation Topics & AI Applications  
 Transportation touches many areas: congestion pricing, autonomous vehicles, electric vehicles, urban rail, fleet management, and more.  
@@ -226,7 +220,6 @@ AI is already being applied in domains such as:
 
 AI is not new to transportation. Since the 1980s, we’ve discussed “intelligent transportation systems.” But today, AI offers fundamentally new capabilities, which is why we’re refreshing our thinking in this class.  
 
----
 
 ### The Progression of AI  
 Jensen Huang (NVIDIA) describes AI development as a progression:  
@@ -244,7 +237,6 @@ When **data, algorithms, and computing** come together, AI becomes powerful. Rem
 
 The key question is: **how do these functions interact with the needs of the transportation system?**  
 
----
 
 ### A Framework for Transportation Analytics  
 At the center, we have **transportation analytics**: monitoring, evaluation, prediction, and optimization.  
@@ -263,12 +255,10 @@ Both supply and demand generate data:
 
 All of this feeds into transportation analytics, completing the cycle of monitoring, prediction, and optimization.  
 
----
 
 ### Exercise for Students  
 Each student should **create a similar framework** for their area of interest—be it public transit, autonomous vehicles, electric vehicles, or urban drones. Use the supply/demand and offline/real-time structure to capture the system dynamics, and then consider how AI functions (represent, predict, explain, control, create) map onto them.  
 
----
 
 ## AI Functions × Human-AI Personas  
 If we add another dimension—**human-AI interaction**—we get a two-dimensional framework:  
@@ -278,7 +268,6 @@ If we add another dimension—**human-AI interaction**—we get a two-dimensiona
 
 Each cell in this grid represents an **AI application opportunity.**  
 
----
 
 ### Examples of Grounded AI Applications  
 1. **Sentiment analysis (Washington, D.C.)**  
@@ -297,7 +286,6 @@ Each cell in this grid represents an **AI application opportunity.**
 5. **Workforce planning with AI**  
    - Understanding employee preferences and dynamics in transit agencies.  
 
----
 
 ### Key Trends in the Mobility Industry  
 AI enables several major shifts:  
@@ -308,7 +296,6 @@ AI enables several major shifts:
 
 All of these are driven by **behavioral understanding** and **computational capacity.**  
 
----
 
 ### Why Now?  
 We are talking about AI in transportation today because of four converging factors:  
@@ -318,7 +305,6 @@ We are talking about AI in transportation today because of four converging facto
 3. **Societal pressure** – Climate change, congestion, safety, and inequality create urgent needs.  
 4. **Policy flux** – Governments are struggling to regulate AI, but the frameworks are emerging.  
 
----
 
 ### What is Grounded AI?  
 When I say **grounded AI**, I mean AI that is:  
@@ -329,7 +315,6 @@ When I say **grounded AI**, I mean AI that is:
 - **Deployment-ready** – designed for real-world use by industry and communities.  
 - **Iterative** – co-created with developers, industry partners, and stakeholders.  
 
----
 
 ### Questions for Students on Grounded AI  
 If you are interested in developing grounded AI applications, ask yourself:  
@@ -358,7 +343,6 @@ Traditionally, the conventional wisdom has been:
 
 But these distinctions are breaking down. Advances in both paradigms are challenging the old assumptions, and increasingly, each side is borrowing from the other.  
 
----
 
 ### Example: Travel Behavior Analysis  
 When predicting travel behavior, two types of errors matter:  
@@ -383,7 +367,6 @@ These two errors often trade off against each other.
 
 This illustrates the **tension**: structured simplicity versus flexible complexity.  
 
----
 
 ### Toward Synergy  
 A promising approach is to combine the two. For example:  
@@ -394,7 +377,6 @@ A promising approach is to combine the two. For example:
 
 This hybrid approach leverages the strengths of both paradigms.  
 
----
 
 ### Criteria for a Good Model  
 1. **Prediction accuracy** – must be competitive.  
@@ -403,7 +385,6 @@ This hybrid approach leverages the strengths of both paradigms.
 3. **Robustness** – models should not be fragile to noise or local disturbances.  
 4. **Practicality** – models developed in research must be usable in practice (e.g., MBTA should be able to adopt an MIT model without difficulty).  
 
----
 
 ### Interpretability and Its Roles  
 Models serve two roles:  
@@ -413,7 +394,6 @@ Models serve two roles:
 
 If a model predicts well but cannot communicate clearly, it fails the second role.  
 
----
 
 ### Methods to Improve Interpretability  
 
@@ -441,7 +421,6 @@ If a model predicts well but cannot communicate clearly, it fails the second rol
 - Decomposing models into independent factors (via matrix or tensor factorization).  
 - Easier to explain what each factor contributes.  
 
----
 
 ### Broader Questions in Modeling  
 - Should models aim to **predict** or **explain**?  
@@ -450,7 +429,6 @@ If a model predicts well but cannot communicate clearly, it fails the second rol
 - Are models for **understanding** or for **action**?  
 - Is the purpose of modeling to **discover** or to **create** knowledge?  
 
----
 
 ### Opportunities in AI for Transportation  
 Despite tensions, opportunities lie in integrating behavior, domain knowledge, and computation.  
@@ -463,7 +441,6 @@ Despite tensions, opportunities lie in integrating behavior, domain knowledge, a
 3. **Defining success** – ultimately, humans must remain in control of objectives.  
    - AI should assist, not dictate.  
 
----
 
 ### Conclusion  
 In this lecture we:  

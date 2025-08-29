@@ -23,3 +23,22 @@ We will be using the following data. However, in the CoLab notebook, we have alr
   - [**Twitter Data Sample:**](https://drive.google.com/file/d/1ucmdRh5s_KuWxOWdfZhbcNL2ACtedO85/view?usp=drive_link) Sample of 5000 tweets directed to or mentioning the Washington Metro Area Transit Authority (WMATA).
 - **Computer Vision**
   - [**Vienna Metro Video Sample:**](https://drive.google.com/file/d/1Mj8nESD2IcqoqJen_X9dhJlTn3iaVPe2/view?usp=drive_link)
+
+## Questions
+
+### Section 1: Using BERT on Transit Tweets 
+
+1. In the example above, we used MetroBERTa to analyze the sentiment of transit tweets. Which of the following would you also be able to use sentiment analysis for?
+2. Why do we have to clean the raw Twitter/X data? Which function above is designed to clean and tokenize?
+3. How did sentiment of the Washington Metro change over time in late 2024?
+4. What can we infer from the sentiment analysis, and are there any other insights you can gain from the data we enriched?
+
+
+### Section 2: Using BERT on Transit Tweets 
+
+1. If you see increased platform crowding during specific events (eg. a concert, parade, etc.), how might that inform scheduling?
+2. Where can we also aquire actionable video data?
+3. What are some other examples of information you can get from transit surveillance data?
+4. If you were a transit operator, how could this type of pixel coverage analysis inform your decisions during peak hours?  
+5. Why might transfer learning work well in some cases but fail in others?
+6. Can you think of examples outside of transit where this issue could appear?
