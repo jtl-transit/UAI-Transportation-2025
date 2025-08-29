@@ -1,10 +1,14 @@
 # AI for Transportation | Recitation 3 - Multimodal Machine Learning for Transit Data
 
-## Introduction
+[**Homework**](../../homeworks/homework_3.pdf)
+[**Recitation Slides**](./recitation_3_slides.pdf)
+[**Lecture**](../../lectures/lecture_3.md)
 
-<a target="_blank" href="https://colab.research.google.com/github/RicoFio/UAI-Transportation-2025/blob/main/recitations/recitation_3/recitation_3_code.ipynb">
+<a target="_blank" href="https://colab.research.google.com/github/jtl-transit/UAI-Transportation-2025/blob/main/recitations/recitation_3/recitation_3_code.ipynb">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
+
+## Introduction
 
 In this recitation, we examine how **multimodal machine learning** can be applied to the public transportation domain. Our aim is to see how modern models handle very different types of input, **text** and **video**, to produce actionable insights for transit operations.
 

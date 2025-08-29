@@ -1,10 +1,14 @@
-# AI for Transportation | Recitation 4 - Generative AI for Urban Planning 
+# AI for Transportation | Recitation 4 - Generative AI for Urban Planning
 
-## Introduction
+[**Homework**](../../homeworks/homework_4.pdf)
+[**Recitation Slides**](./recitation_4_slides.pdf)
+[**Lecture**](../../lectures/lecture_4.md)
 
-<a target="_blank" href="https://github.com/jtl-transit/UAI-Transportation-2025/blob/main/recitations/recitation_4/Recitation_4_Code.ipynb">
+<a target="_blank" href="https://colab.research.google.com/github/jtl-transit/UAI-Transportation-2025/blob/main/recitations/recitation_4/recitation_4_code.ipynb">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
+
+## Introduction
 
 In this recitation, we explore how conditional diffusion models, specifically **ControlNet**, can be used to generate urban imagery under structured constraints. Our goal is to see how modern generative AI models can combine **text prompts** with **spatial condition images** to synthesize layouts that are both realistic and aligned with planning objectives.  
 
