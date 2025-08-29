@@ -1,4 +1,4 @@
-# Recitation 1: Introduction
+# Recitation 1: Urban Mobility and AI
 
 [**Homework**](../../homeworks/homework_1.pdf)
 [**Recitation Slides**](./recitation_1_slides.pdf)
