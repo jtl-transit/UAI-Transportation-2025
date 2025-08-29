@@ -2,7 +2,7 @@
 
 ## Introduction
 
-<a target="_blank" href="https://colab.research.google.com/github/RicoFio/UAI-Transportation-2025/blob/main/recitations/recitation_4/recitation_4_code.ipynb">
+<a target="_blank" href="https://github.com/jtl-transit/UAI-Transportation-2025/blob/main/recitations/recitation_4/Recitation_4_Code.ipynb">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
 
@@ -27,4 +27,4 @@ We will be using the following data. However, in the CoLab notebook, we have alr
 
 ## Preparation
 
-In the `./code/` folder, you can find the scripts we have used to *quantize* the model, i.e. reduce the precision of the weight values from a 64-bit float to a 16-bit float, allowing us to have more light-weight models with similar performance.
+In the `./code/` folder, you can find the scripts we have used to [*quantize* the model](https://huggingface.co/docs/optimum/en/concept_guides/quantization), i.e. reduce the precision of the weight values from a 64-bit float to a 16-bit float, allowing us to have more light-weight models with similar performance.
