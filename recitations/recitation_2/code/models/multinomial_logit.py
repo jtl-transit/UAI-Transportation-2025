@@ -1,32 +1,15 @@
-import os
 import warnings
-from dataclasses import dataclass
-from typing import Tuple, List, Optional
 
 warnings.filterwarnings('ignore')
 
 import numpy as np
 import pandas as pd
-import scipy.stats as ss
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 from scipy.optimize import minimize
 from scipy.special import logsumexp
 
-import tensorflow as tf
-from tensorflow.keras import layers, Model, optimizers, callbacks
-
-from sklearn.model_selection import StratifiedKFold, KFold, train_test_split, cross_validate
-from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import accuracy_score, classification_report, log_loss, roc_auc_score
 from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC, LinearSVC
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.naive_bayes import GaussianNB
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 
 
@@ -44,7 +27,7 @@ class MultinomialLogit:
         self.include_constants = include_constants
         self.scale = scale
         self.random_state = random_state
-        self.maxiter = maxiter
+        self.max_iter = maxiter  # Changed from maxiter to max_iter
 
         self.params = None
         self.param_names = None
@@ -96,23 +79,69 @@ class MultinomialLogit:
         add[mask] = asc[altg[mask] - 2]
         return u + add
 
-    def _neg_loglik(self, params, X, y, obs_ids, alternatives):
+    def _neg_loglik_and_grad(self, params, X, y, obs_ids, alternatives):
+        """
+        Compute negative log-likelihood and its gradient simultaneously for efficiency.
+        
+        Returns:
+        --------
+        tuple : (negative log-likelihood, gradient)
+        """
         asc, beta = self._split_params(params)
-
-        total = 0.0
+        
+        total_ll = 0.0
+        grad_asc = np.zeros(self.n_alts_ - 1)  # gradient w.r.t. ASCs
+        grad_beta = np.zeros(self.n_features_)  # gradient w.r.t. betas
+        
         for idx in self.groups_:
             Xg = X[idx]
             yg = y[idx]
             altg = alternatives[idx]
-
-            # basic sanity: exactly one chosen in the set
+            
+            # Skip malformed sets
             if yg.sum() != 1:
-                # skip malformed sets
                 continue
-
+                
+            # Compute utilities
             ug = self._utilities_for_group(asc, beta, Xg, altg)
-            total += (ug[yg == 1][0] - logsumexp(ug))
-        return -total
+            
+            # Numerical stability: subtract max before exponential
+            ug_max = np.max(ug)
+            ug_stable = ug - ug_max
+            exp_u = np.exp(ug_stable)
+            sum_exp_u = np.sum(exp_u)
+            
+            # Log-likelihood contribution
+            chosen_idx = np.where(yg == 1)[0][0]
+            total_ll += ug_stable[chosen_idx] - np.log(sum_exp_u)
+            
+            # Gradient computation
+            probs = exp_u / sum_exp_u  # choice probabilities
+            
+            # Gradient w.r.t. beta (feature parameters)
+            grad_beta += Xg[chosen_idx] - np.sum(probs[:, np.newaxis] * Xg, axis=0)
+            
+            # Gradient w.r.t. ASCs (alternative specific constants)
+            if self.include_constants:
+                for j, alt in enumerate(altg):
+                    if alt > 1:  # alt 1 is reference
+                        asc_idx = alt - 2
+                        if j == chosen_idx:
+                            grad_asc[asc_idx] += 1.0
+                        grad_asc[asc_idx] -= probs[j]
+        
+        # Combine gradients
+        if self.include_constants:
+            grad = np.concatenate([grad_asc, grad_beta])
+        else:
+            grad = grad_beta
+            
+        return -total_ll, -grad
+
+    def _neg_loglik(self, params, X, y, obs_ids, alternatives):
+        """Original negative log-likelihood function (kept for compatibility)"""
+        ll, _ = self._neg_loglik_and_grad(params, X, y, obs_ids, alternatives)
+        return ll
 
     def fit(self, X, y, obs_ids, alternatives, feature_names=None):
         """
@@ -169,22 +198,214 @@ class MultinomialLogit:
         self.alt_by_row_ = alt_norm
         self.y_ = y
 
-        # Initialization: small negatives for "cost-like" features often help.
-        rng = np.random.default_rng(self.random_state)
-        theta0 = rng.normal(0.0, 0.1, n_params)
+        # Try multiple optimization methods
+        methods = ['L-BFGS-B', 'BFGS', 'Newton-CG']
+        best_result = None
+        best_success = False
+        
+        for method in methods:
+            for init_strategy in ['zeros', 'random', 'smart']:
+                try:
+                    # Initialize parameters
+                    if init_strategy == 'zeros':
+                        init_params = np.zeros(n_params)
+                    elif init_strategy == 'random':
+                        np.random.seed(self.random_state)
+                        init_params = np.random.normal(0, 0.1, n_params)
+                    else:  # smart
+                        init_params = self._smart_initialization(Xs, y)
+                    
+                    # Define objective with current data
+                    def objective(params):
+                        return self._neg_loglik_and_grad(params, Xs, y, obs_ids, alt_norm)
+                    
+                    # Set up bounds if using L-BFGS-B
+                    bounds = None
+                    if method == 'L-BFGS-B':
+                        # Loose bounds to prevent extreme values
+                        bounds = [(-10, 10) for _ in range(n_params)]
+                    
+                    # Run optimization
+                    if method == 'Newton-CG':
+                        result = minimize(
+                            fun=lambda x: objective(x)[0],
+                            x0=init_params,
+                            method=method,
+                            jac=lambda x: objective(x)[1],
+                            options={'maxiter': self.max_iter, 'disp': False}
+                        )
+                    else:
+                        result = minimize(
+                            fun=objective,
+                            x0=init_params,
+                            method=method,
+                            jac=True,
+                            bounds=bounds,
+                            options={'maxiter': self.max_iter, 'disp': False}
+                        )
+                    
+                    # Check if this is the best result so far
+                    if result.success and (best_result is None or result.fun < best_result.fun):
+                        best_result = result
+                        best_success = True
+                    
+                    # If we got a successful result, we can break early
+                    if result.success:
+                        break
+                        
+                except Exception as e:
+                    continue
+            
+            # If we found a successful result, we can break
+            if best_success:
+                break
+        
+        if best_success and best_result is not None:
+            self.params = best_result.x
+            self.opt_result_ = best_result
+            self.fitted_ = True
+            return self
+        else:
+            self.fitted_ = False
+            self.params = None
+            return False
 
-        # Optimize
-        result = minimize(
-            fun=self._neg_loglik,
-            x0=theta0,
-            args=(Xs, y, obs_ids, alt_norm),
-            method="BFGS",
-            options={"maxiter": self.maxiter, "disp": False}
-        )
+    def _smart_initialization(self, X, y):
+        """
+        Smart initialization using simple logistic regression as a starting point.
+        """
+        try:
+            from sklearn.linear_model import LogisticRegression
+            
+            # Use a simple logistic regression to get reasonable initial values
+            lr = LogisticRegression(fit_intercept=self.include_constants, random_state=self.random_state, max_iter=1000)
+            lr.fit(X, y)
+            
+            n_params = (self.n_alts_ - 1) + self.n_features_ if self.include_constants else self.n_features_
+            theta0 = np.zeros(n_params)
+            
+            if self.include_constants:
+                # Initialize ASCs with small random values
+                theta0[:self.n_alts_-1] = np.random.default_rng(self.random_state).normal(0.0, 0.1, self.n_alts_-1)
+                # Initialize feature parameters with logistic regression coefficients
+                theta0[self.n_alts_-1:] = lr.coef_[0] * 0.1  # Scale down for stability
+            else:
+                theta0 = lr.coef_[0] * 0.1
+                
+            return theta0
+        except:
+            # Fallback to random initialization
+            n_params = (self.n_alts_ - 1) + self.n_features_ if self.include_constants else self.n_features_
+            return np.random.default_rng(self.random_state).normal(0.0, 0.01, n_params)
 
-        self.params = result.x
-        self.convergence_info = result
-        self.log_likelihood = -result.fun
+        # Smart initialization strategy
+        n_params = (self.n_alts_ - 1) + self.n_features_ if self.include_constants else self.n_features_
+        
+        print(f"DEBUG: n_params = {n_params}, n_alts = {self.n_alts_}, n_features = {self.n_features_}")
+        
+        # Multiple initialization strategies for robustness
+        initialization_strategies = [
+            # Strategy 1: Small random values around zero
+            lambda: np.random.default_rng(self.random_state).normal(0.0, 0.01, n_params),
+            # Strategy 2: Initialize with simple logistic regression coefficients
+            lambda: self._smart_initialization(Xs, y),
+            # Strategy 3: Larger random initialization 
+            lambda: np.random.default_rng(self.random_state).normal(0.0, 0.5, n_params),
+        ]
+        
+        # Try multiple optimization methods for robustness
+        optimization_methods = [
+            {'method': 'BFGS', 'jac': True},
+            {'method': 'L-BFGS-B', 'jac': True},
+            {'method': 'Newton-CG', 'jac': True},
+            {'method': 'BFGS', 'jac': False},  # Fallback without gradients
+        ]
+        
+        best_result = None
+        best_ll = -np.inf
+        
+        print(f"DEBUG: Starting optimization with {len(self.groups_)} choice sets")
+        
+        for i, init_strategy in enumerate(initialization_strategies):
+            theta0 = init_strategy()
+            print(f"DEBUG: Trying initialization strategy {i+1}, theta0 shape: {theta0.shape}")
+            
+            for j, opt_config in enumerate(optimization_methods):
+                try:
+                    print(f"DEBUG: Trying optimization method {j+1}: {opt_config['method']}")
+                    # Set up optimization options
+                    options = {
+                        'maxiter': self.maxiter,
+                        'disp': False,
+                        'gtol': 1e-6,
+                        'ftol': 1e-9
+                    }
+                    
+                    if opt_config['jac']:
+                        result = minimize(
+                            fun=self._neg_loglik_and_grad,
+                            x0=theta0,
+                            args=(Xs, y, obs_ids, alt_norm),
+                            method=opt_config['method'],
+                            jac=True,
+                            options=options
+                        )
+                    else:
+                        result = minimize(
+                            fun=self._neg_loglik,
+                            x0=theta0,
+                            args=(Xs, y, obs_ids, alt_norm),
+                            method=opt_config['method'],
+                            options=options
+                        )
+                    
+                    print(f"DEBUG: Optimization completed, success: {result.success}, fun: {result.fun}")
+                    
+                    # Check if this is the best result so far
+                    current_ll = -result.fun
+                    if result.success and current_ll > best_ll:
+                        best_result = result
+                        best_ll = current_ll
+                        print(f"DEBUG: New best result found, LL: {best_ll}")
+                        
+                    # If we got a good convergence, we can stop early
+                    if result.success and result.fun < 1e-6:
+                        print("DEBUG: Good convergence achieved, stopping early")
+                        break
+                        
+                except Exception as e:
+                    print(f"DEBUG: Exception in optimization: {e}")
+                    # If this method fails, try the next one
+                    continue
+            
+            # If we found a good solution, no need to try other initializations
+            if best_result is not None and best_result.success:
+                print("DEBUG: Found good solution, stopping initialization search")
+                break
+        
+        # Use the best result found
+        if best_result is None:
+            print("DEBUG: No good result found, using fallback")
+            # Last resort: simple BFGS with basic initialization
+            theta0 = np.random.default_rng(self.random_state).normal(0.0, 0.01, n_params)
+            best_result = minimize(
+                fun=self._neg_loglik,
+                x0=theta0,
+                args=(Xs, y, obs_ids, alt_norm),
+                method="BFGS",
+                options={"maxiter": self.maxiter, "disp": False}
+            )
+            print(f"DEBUG: Fallback result - success: {best_result.success}, fun: {best_result.fun}")
+
+        # Store results from the best optimization
+        print(f"DEBUG: Storing results from best optimization")
+        self.params = best_result.x
+        self.convergence_info = best_result
+        self.log_likelihood = -best_result.fun
+
+        # Enhanced convergence diagnostics
+        convergence_status = self._assess_convergence(best_result)
+        print(f"DEBUG: Convergence status: {convergence_status}")
 
         # AIC/BIC per number of *choice sets* (not rows)
         n_sets = len(self.groups_)
@@ -196,9 +417,41 @@ class MultinomialLogit:
               f"| LL = {self.log_likelihood:.3f}",
               f"| AIC = {self.aic:.2f}",
               f"| BIC = {self.bic:.2f}",
-              f"| Converged = {result.success}")
+              f"| Converged = {convergence_status}")
 
+        print(f"DEBUG: About to return self")
         return self
+    
+    def _assess_convergence(self, result):
+        """
+        Enhanced convergence assessment beyond just result.success
+        """
+        if not result.success:
+            return False
+            
+        # Additional convergence checks
+        checks = []
+        
+        # Check 1: Gradient norm should be small
+        if hasattr(result, 'jac') and result.jac is not None:
+            grad_norm = np.linalg.norm(result.jac)
+            checks.append(grad_norm < 1e-4)
+        else:
+            checks.append(True)  # Can't check without gradient
+            
+        # Check 2: Function tolerance
+        if hasattr(result, 'fun'):
+            checks.append(not np.isnan(result.fun) and not np.isinf(result.fun))
+        
+        # Check 3: Parameter values should be reasonable (not too extreme)
+        param_check = np.all(np.abs(self.params) < 50)  # Reasonable parameter bounds
+        checks.append(param_check)
+        
+        # Check 4: Log-likelihood should be finite and negative
+        ll_check = np.isfinite(self.log_likelihood) and self.log_likelihood < 0
+        checks.append(ll_check)
+        
+        return all(checks)
 
     def predict_proba(self, X, obs_ids, alternatives):
         """

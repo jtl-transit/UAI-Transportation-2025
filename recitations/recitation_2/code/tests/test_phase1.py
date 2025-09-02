@@ -50,17 +50,3 @@ try:
     
 except Exception as e:
     print(f"❌ Model registry test failed: {e}")
-
-print("\n[3] Summary:")
-print("✅ Phase 1 COMPLETE: Data Loading & Preprocessing Infrastructure")
-print("   - Flexible data loading with path detection")
-print("   - Wide-to-long transformation with multiple column formats")
-print("   - Person-level 5-fold cross-validation")
-print("   - Unified data preparation pipeline")
-print("   - Basic model registry framework")
-
-print("\nReady for Phase 2: Model API Standardization")
-print("   Next steps:")
-print("   - Fix model import issues")
-print("   - Standardize fit/predict_proba signatures") 
-print("   - Test with actual model training")
