@@ -1,0 +1,355 @@
+% Preamble
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{enumerate}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{fancyhdr}
+
+% Header setup
+\pagestyle{fancy}
+\fancyhf{} % Clear all header and footer fields
+\fancyhead[L]{MIT Open Learning - Universal AI}
+\fancyhead[R]{Transportation}
+\renewcommand{\headrulewidth}{2pt} % Thick black line
+\renewcommand{\footrulewidth}{0pt} % No footer line
+
+% Document
+\title{Homework 2: Models and Approaches - Discrete Choice Models and Deep Neural Networks}
+\author{Riccardo Fiorista | \href{mailto:riccardo-uai@mit.edu}{riccardo-uai@mit.edu}}
+\date{September, 2025}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy} % Ensure header appears on title page
+
+\section*{Lecture Summary}
+
+Lecture 2 explored the integration of \textbf{Discrete Choice Models (DCM)} and \textbf{Deep Neural Networks (DNN)} through four key methodological contributions that advance AI for transportation beyond simple prediction toward interpretable, theory-informed modeling.
+
+The lecture introduced the challenge of predicting individual choice behavior (e.g., car vs. bus) using both classical econometric approaches and modern deep learning. The central insight: while DCMs provide interpretability and theoretical grounding, DNNs offer flexibility and approximation power. The key innovation lies in combining these approaches rather than treating them as competing paradigms.
+
+\textbf{Section 1: Extracting Economic Information for Interpretation} demonstrated how DNNs can recover standard economic measures (elasticities, value of time, substitution patterns, consumer surplus) through post-estimation analysis. While DNNs produce more nuanced patterns than smooth MNL curves, they can still provide meaningful economic insights for transportation planning.
+
+\textbf{Section 2: Architectural Design with Alternative-Specific Utility Functions} showed how DCM utility theory can guide DNN architecture design. The \textbf{Alternative-Specific Utility (ASU) DNN} enforces sparsity by connecting each mode's attributes only to that mode's utility, acting as implicit regularization. This architecture respects the Independence of Irrelevant Alternatives (IIA) property and achieves better prediction accuracy than fully connected networks while maintaining interpretability.
+
+\textbf{Section 3: Theory-Based Residual Neural Network (TB-ResNet)} introduced a principled fusion approach inspired by ResNet skip connections. The final utility combines DCM and DNN components: $U(x) = \delta \, V_{\text{DCM}}(x) + (1-\delta) \, V_{\text{DNN}}(x)$. This hybrid model optimizes prediction accuracy in the interior ($0 < \delta < 1$) while preserving both theoretical foundations and capturing nonlinear patterns.
+
+\textbf{Section 4: Deep Hybrid Model with Urban Imagery} (briefly introduced) demonstrated integration of structured choice attributes with unstructured data sources like satellite imagery for comprehensive transportation mode analysis.
+
+The lecture established that domain knowledge-driven architecture design makes DNNs more efficient, interpretable, and robust, bridging the gap between econometric tradition and deep learning innovation in transportation modeling.
+
+In this recitation, we implement these concepts using the 1987 Netherlands Train dataset, comparing classical baselines (Multinomial Logit) with theory-informed neural architectures (ASU-DNN vs. Fully Connected DNN) to understand the trade-offs between approximation power and estimation stability.
+
+\section*{Resources}
+
+\textbf{Colab Notebook:} Access the interactive implementation at:\\
+\url{https://colab.research.google.com/github/RicoFio/UAI-Transportation-2025/blob/main/recitations/recitation_2/colab_notebook.ipynb}
+
+\section*{Exercise 1: Understanding the Netherlands Train Dataset}
+
+\begin{center}
+\fcolorbox{gray}{lightgray}{%
+\begin{minipage}{0.8\textwidth}
+\centering
+\textbf{\Large Explore the 1987 Netherlands Train dataset structure \\
+and understand discrete choice data formatting}
+\end{minipage}%
+}
+\end{center}
+
+This exercise introduces you to the 1987 Netherlands Train mode-choice dataset, a classic dataset in discrete choice modeling research. The dataset captures travel choice scenarios where individuals choose between two train alternatives based on price, travel time, comfort level, and number of changes. Understanding this dataset's structure is crucial for implementing discrete choice models effectively.
+
+\subsection*{Dataset Overview}
+
+The Netherlands Train dataset contains 2,929 choice observations from a stated preference survey conducted in 1987. Each observation represents a choice scenario where an individual selects between two hypothetical train alternatives. The dataset includes:
+
+\begin{itemize}
+\item \textbf{Individual identifier (id):} Unique identifier for each survey respondent
+\item \textbf{Choice scenario (choiceid):} Identifier for each choice situation (19 scenarios total)
+\item \textbf{Choice outcome:} Selected alternative (choice1 or choice2)
+\item \textbf{Alternative attributes:} For each alternative j (j = 1, 2):
+\begin{itemize}
+\item \textbf{Price (pricej):} Travel cost in cents of guilders
+\item \textbf{Time (timej):} Travel time in minutes
+\item \textbf{Comfort (comfortj):} Comfort level (0 = highest, 1 = medium, 2 = lowest)
+\item \textbf{Changes (changej):} Number of transfers required
+\end{itemize}
+\end{itemize}
+
+\subsection*{Data Structure Analysis}
+
+The dataset demonstrates important characteristics of choice data:
+\begin{itemize}
+\item \textbf{Panel structure:} Multiple choice scenarios per individual (average 154.2 scenarios per person)
+\item \textbf{Balanced choice distribution:} Approximately 50\% choose alternative 1, 50\% choose alternative 2
+\item \textbf{Attribute variation:} Systematic variation in price, time, comfort, and changes across alternatives
+\item \textbf{Wide vs. Long format:} Data transformation required for different modeling approaches
+\end{itemize}
+
+\subsection*{Instructions}
+
+\begin{enumerate}[(a)]
+\item \textbf{Data Exploration:} Execute the data loading cells and examine the dataset structure, paying attention to the panel nature of the data and choice distribution
+\item \textbf{Wide-to-Long Transformation:} Understand how the wide format (one row per choice scenario) converts to long format (one row per alternative) for discrete choice modeling
+\item \textbf{Attribute Analysis:} Examine the distribution and variation of key attributes (price, time, comfort, changes) and consider how these might influence choice behavior
+\item \textbf{Cross-Validation Setup:} Understand how the data splits maintain individual-level grouping to prevent data leakage in model evaluation
+\end{enumerate}
+
+\section*{Exercise 2: Simple Logistic Regression Baseline}
+
+\begin{center}
+\fcolorbox{gray}{lightgray}{%
+\begin{minipage}{0.8\textwidth}
+\centering
+\textbf{\Large Implement and interpret a difference-based logistic regression \\
+as the simplest discrete choice baseline}
+\end{minipage}%
+}
+\end{center}
+
+The simple logistic regression model serves as our most basic baseline, treating the choice problem as binary classification using difference features. This approach demonstrates how traditional machine learning methods can be applied to choice data while highlighting their limitations compared to utility-based approaches.
+
+\subsection*{Model Formulation}
+
+The logistic regression model predicts the probability of choosing alternative 2 over alternative 1 using attribute differences:
+
+\begin{align}
+P(\text{choice} = \text{alt2}) = \sigma(\beta_0 + \beta_1 \cdot \Delta\text{price} + \beta_2 \cdot \Delta\text{time} + \beta_3 \cdot \Delta\text{comfort} + \beta_4 \cdot \Delta\text{change})
+\end{align}
+
+where $\Delta\text{feature} = \text{feature}_2 - \text{feature}_1$ and $\sigma$ is the sigmoid function.
+
+\subsection*{Key Characteristics}
+
+\begin{itemize}
+\item \textbf{Simplicity:} Uses only difference features, reducing dimensionality
+\item \textbf{Baseline Performance:} With balanced choice data (50/50 split), provides ~50\% accuracy baseline
+\item \textbf{Interpretability:} Coefficients indicate how attribute differences affect choice probability
+\item \textbf{Limitations:} Cannot capture alternative-specific effects or complex utility structures
+\end{itemize}
+
+\subsection*{Instructions}
+
+\begin{enumerate}[(a)]
+\item \textbf{Model Implementation:} Run the logistic regression implementation and examine the coefficient estimates
+\item \textbf{Performance Analysis:} Understand why the model achieves approximately 50\% accuracy on this balanced dataset
+\item \textbf{Coefficient Interpretation:} Interpret the signs and magnitudes of coefficients for price, time, comfort, and change differences
+\item \textbf{Limitations Discussion:} Consider what important choice modeling aspects this simple approach misses
+\end{enumerate}
+
+\section*{Exercise 3: Multinomial Logit Model}
+
+\begin{center}
+\fcolorbox{gray}{lightgray}{%
+\begin{minipage}{0.8\textwidth}
+\centering
+\textbf{\Large Implement the classic random utility model \\
+and extract economic measures for transportation analysis}
+\end{minipage}%
+}
+\end{center}
+
+The Multinomial Logit (MNL) model represents the cornerstone of discrete choice modeling in transportation research. Based on random utility theory, it provides both predictive capability and economic interpretability that is essential for transportation planning and policy analysis.
+
+\subsection*{Theoretical Foundation}
+
+The MNL model assumes individuals choose the alternative that maximizes their utility:
+
+\begin{align}
+U_{ij} &= V_{ij} + \varepsilon_{ij} \\
+V_{ij} &= \alpha_j + \beta_1 \cdot \text{price}_{ij} + \beta_2 \cdot \text{time}_{ij} + \beta_3 \cdot \text{comfort}_{ij} + \beta_4 \cdot \text{change}_{ij}
+\end{align}
+
+where $U_{ij}$ is the utility of alternative $j$ for individual $i$, $V_{ij}$ is the deterministic utility, and $\varepsilon_{ij}$ follows a Type I Extreme Value distribution.
+
+This leads to the choice probability:
+\begin{align}
+P_{ij} = \frac{\exp(V_{ij})}{\sum_{k \in C_i} \exp(V_{ik})}
+\end{align}
+
+\subsection*{Economic Interpretation}
+
+The MNL model enables extraction of key economic measures:
+\begin{itemize}
+\item \textbf{Value of Time (VOT):} $\text{VOT} = -\frac{\beta_{\text{time}}}{\beta_{\text{price}}}$ (willingness to pay per minute saved)
+\item \textbf{Elasticities:} Sensitivity of choice probabilities to attribute changes
+\item \textbf{Alternative-Specific Constants:} Capture unobserved preferences for each mode
+\item \textbf{Substitution Patterns:} IIA property implies proportional substitution
+\end{itemize}
+
+\subsection*{Instructions}
+
+\begin{enumerate}[(a)]
+\item \textbf{Model Estimation:} Execute the MNL implementation using maximum likelihood estimation and examine parameter convergence
+\item \textbf{Coefficient Analysis:} Interpret the signs and magnitudes of price, time, comfort, and change coefficients
+\item \textbf{Economic Measures:} Calculate value of time and discuss its implications for transportation policy
+\item \textbf{Model Fit Assessment:} Evaluate in-sample fit and out-of-sample prediction accuracy compared to the logistic baseline
+\end{enumerate}
+
+\section*{Exercise 4: Fully Connected Deep Neural Network}
+
+\begin{center}
+\fcolorbox{gray}{lightgray}{%
+\begin{minipage}{0.8\textwidth}
+\centering
+\textbf{\Large Implement a standard neural network for choice prediction \\
+and understand the flexibility-interpretability trade-off}
+\end{minipage}%
+}
+\end{center}
+
+The Fully Connected Deep Neural Network (FC-DNN) represents the standard deep learning approach to choice modeling, treating choice prediction as a classification problem. While offering high flexibility and approximation power, this approach highlights key challenges in applying neural networks to choice data.
+
+\subsection*{Architecture Design}
+
+The FC-DNN uses a fully connected architecture where:
+\begin{itemize}
+\item \textbf{Input Layer:} All alternative attributes (price, time, comfort, change for both alternatives)
+\item \textbf{Hidden Layers:} Multiple dense layers with ReLU activation
+\item \textbf{Output Layer:} Softmax activation producing choice probabilities
+\item \textbf{Connectivity:} All inputs connected to all hidden units (dense connectivity)
+\end{itemize}
+
+\subsection*{Key Characteristics and Challenges}
+
+\begin{itemize}
+\item \textbf{High Parameter Count:} Dense connectivity leads to many parameters relative to data size
+\item \textbf{Overfitting Risk:} Limited training data (2,929 observations) vs. high model capacity
+\item \textbf{Lack of Interpretability:} Complex weight interactions difficult to interpret economically
+\item \textbf{No Theoretical Structure:} Ignores utility theory and choice modeling principles
+\item \textbf{Computational Requirements:} Higher training time and memory usage
+\end{itemize}
+
+\subsection*{Instructions}
+
+\begin{enumerate}[(a)]
+\item \textbf{Architecture Analysis:} Examine the FC-DNN structure and count the total number of parameters
+\item \textbf{Training Dynamics:} Observe training and validation curves, noting any signs of overfitting
+\item \textbf{Performance Comparison:} Compare prediction accuracy with MNL baseline and analyze cross-validation stability
+\item \textbf{Interpretability Challenges:} Attempt to extract economic insights from the trained network and discuss the difficulties encountered
+\end{enumerate}
+
+\section*{Exercise 5: Alternative-Specific Utility Deep Neural Network}
+
+\begin{center}
+\fcolorbox{gray}{lightgray}{%
+\begin{minipage}{0.8\textwidth}
+\centering
+\textbf{\Large Implement theory-informed neural architecture \\
+that combines DCM principles with deep learning flexibility}
+\end{minipage}%
+}
+\end{center}
+
+The Alternative-Specific Utility Deep Neural Network (ASU-DNN) represents the key innovation from Lecture 2, demonstrating how discrete choice theory can guide neural network architecture design. This approach achieves superior performance while maintaining economic interpretability.
+
+\subsection*{Theoretical Motivation}
+
+The ASU-DNN architecture is inspired by utility theory:
+\begin{itemize}
+\item \textbf{Sparsity Principle:} Each alternative's attributes only influence its own utility
+\item \textbf{IIA Preservation:} Architecture respects Independence of Irrelevant Alternatives
+\item \textbf{Implicit Regularization:} Sparse connectivity acts as domain-knowledge regularizer
+\item \textbf{Economic Structure:} Maintains clear mapping between attributes and utilities
+\end{itemize}
+
+\subsection*{Architecture Design}
+
+The ASU-DNN implements sparse connectivity:
+\begin{itemize}
+\item \textbf{Alternative-Specific Paths:} Separate neural pathways for each alternative
+\item \textbf{Attribute Mapping:} Alternative 1 attributes → Alternative 1 utility head
+\item \textbf{Sparse Weight Matrix:} Block-diagonal structure enforces sparsity
+\item \textbf{Utility Combination:} Softmax over alternative-specific utilities
+\end{itemize}
+
+\subsection*{Expected Benefits}
+
+Theory predicts ASU-DNN advantages:
+\begin{itemize}
+\item \textbf{Reduced Overfitting:} Fewer parameters through enforced sparsity
+\item \textbf{Better Generalization:} Domain knowledge guides architecture
+\item \textbf{Improved Interpretability:} Clear attribute-utility mapping preserved
+\item \textbf{Training Stability:} More stable convergence due to regularization effect
+\end{itemize}
+
+\subsection*{Instructions}
+
+\begin{enumerate}[(a)]
+\item \textbf{Architecture Comparison:} Compare ASU-DNN parameter count with FC-DNN and understand the sparsity benefit
+\item \textbf{Performance Analysis:} Evaluate cross-validation accuracy and training stability compared to all previous models
+\item \textbf{Interpretability Assessment:} Examine choice probability curves and substitution patterns, comparing with MNL smoothness
+\item \textbf{Regularization Effect:} Analyze how the sparse architecture acts as implicit regularization, improving generalization
+\end{enumerate}
+
+\section*{Exercise 6: Comparative Analysis and Economic Insights}
+
+\begin{center}
+\fcolorbox{gray}{lightgray}{%
+\begin{minipage}{0.8\textwidth}
+\centering
+\textbf{\Large Compare all modeling approaches and extract \\
+economic insights from theory-informed neural networks}
+\end{minipage}%
+}
+\end{center}
+
+This final exercise synthesizes results across all modeling approaches, demonstrating how theory-informed neural architectures can bridge the gap between classical econometric models and modern deep learning while preserving economic interpretability.
+
+\subsection*{Model Performance Comparison}
+
+Compare models across multiple dimensions:
+\begin{itemize}
+\item \textbf{Prediction Accuracy:} Cross-validation performance and generalization
+\item \textbf{Training Stability:} Convergence behavior and variance across folds
+\item \textbf{Parameter Efficiency:} Model capacity relative to performance
+\item \textbf{Economic Interpretability:} Ability to extract meaningful economic measures
+\end{itemize}
+
+\subsection*{Economic Analysis}
+
+Extract and compare economic insights:
+\begin{itemize}
+\item \textbf{Choice Probability Surfaces:} How each model responds to attribute changes
+\item \textbf{Substitution Patterns:} Cross-alternative effects and IIA implications
+\item \textbf{Value of Time Estimation:} Implicit VOT from neural network predictions
+\item \textbf{Policy Scenario Analysis:} Model predictions under hypothetical policy changes
+\end{itemize}
+
+\subsection*{Instructions}
+
+\begin{enumerate}[(a)]
+\item \textbf{Performance Summary:} Create a comprehensive comparison table of all models showing accuracy, parameter count, and training time
+\item \textbf{Economic Interpretation:} Extract value of time estimates from each model and compare with MNL analytical results
+\item \textbf{Visualization Analysis:} Examine choice probability curves across models, noting smoothness (MNL) vs. complexity (DNNs)
+\item \textbf{Trade-off Discussion:} Reflect on the interpretability-flexibility trade-off and when each approach might be preferred
+\end{enumerate}
+
+\section*{Reflection and Critical Analysis}
+
+Consider these questions as you complete the exercises:
+
+\begin{enumerate}[(a)]
+\item \textbf{Domain Knowledge Integration:} How does incorporating utility theory into neural architecture design affect both predictive performance and economic interpretability? What are the implications for other domains?
+
+\item \textbf{Data Requirements:} How do the data requirements differ between classical econometric models and neural networks? What happens when you have limited data vs. big data scenarios?
+
+\item \textbf{Practical Implementation:} In a real transportation planning context, which modeling approach would you recommend and why? Consider factors like interpretability requirements, data availability, and stakeholder communication.
+
+\item \textbf{Future Directions:} How might these approaches extend to more complex choice scenarios (larger choice sets, real-time data, multiple data modalities)? What are the next steps in theory-informed neural architecture design?
+\end{enumerate}
+
+\section*{Conclusion}
+
+This homework demonstrated the evolution from classical discrete choice modeling toward theory-informed neural architectures. The ASU-DNN approach exemplifies how domain knowledge can guide machine learning design, achieving the dual objectives of improved predictive performance and preserved interpretability.
+
+The methodological framework presented here—using economic theory to inform neural architecture design—has broader applications beyond transportation, potentially transforming how we approach machine learning problems in domains where interpretability and theoretical grounding are essential alongside predictive performance.
+
+\end{document}

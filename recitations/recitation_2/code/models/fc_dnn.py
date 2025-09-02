@@ -365,3 +365,113 @@ class FullyConnectedDNN:
 
         plt.tight_layout()
         plt.show()
+
+    def plot_choice_probabilities(self, variable_name, variable_range, baseline_data, 
+                                 alternative_names=None, figsize=(10, 6)):
+        """
+        Plot choice probabilities as a function of a varying attribute.
+        
+        Parameters:
+        -----------
+        variable_name : str
+            Name of the variable to vary ('price', 'time', 'change', or 'comfort')
+        variable_range : array-like
+            Range of values for the variable to plot
+        baseline_data : dict
+            Dictionary with baseline values for all variables. 
+            Keys should be: 'price', 'time', 'change', 'comfort'
+            Example: {'price': 2400, 'time': 130, 'change': 1, 'comfort': 1}
+        alternative_names : list, optional
+            Names for the alternatives. If None, uses 'Alt 1', 'Alt 2'.
+        figsize : tuple
+            Figure size (width, height)
+        """
+        if self.model is None:
+            raise ValueError("Model must be fitted before plotting.")
+        
+        import matplotlib.pyplot as plt
+        
+        # FC-DNN is a binary choice model, so we have 2 alternatives
+        if alternative_names is None:
+            alternative_names = ['Alt 1', 'Alt 2']
+        elif len(alternative_names) != 2:
+            raise ValueError(f"FullyConnectedDNN is a binary model, expected 2 alternative names, got {len(alternative_names)}")
+        
+        # Define feature order as expected by the model
+        feature_order = ['price', 'time', 'change', 'comfort']
+        
+        # Validate inputs
+        if variable_name not in feature_order:
+            raise ValueError(f"variable_name must be one of {feature_order}")
+        
+        for feature in feature_order:
+            if feature not in baseline_data:
+                raise ValueError(f"baseline_data must contain '{feature}'")
+        
+        # Create synthetic data for prediction
+        n_points = len(variable_range)
+        
+        # For FC-DNN, we need to create choice sets with 2 alternatives each
+        X_plot = []
+        
+        for var_value in variable_range:
+            # Create feature vectors for both alternatives
+            alt1_features = []  # Baseline alternative
+            alt2_features = []  # Variable alternative
+            
+            for feature_name in feature_order:
+                if feature_name == variable_name:
+                    alt1_features.append(baseline_data[feature_name])  # Alt 1: baseline value
+                    alt2_features.append(var_value)                   # Alt 2: varying value
+                else:
+                    alt1_features.append(baseline_data[feature_name]) # Both: baseline value
+                    alt2_features.append(baseline_data[feature_name])
+            
+            # For FC-DNN, we create the flattened feature vector (alt1 + alt2 features)
+            full_features = alt1_features + alt2_features  # 8 features total (4 per alternative)
+            X_plot.append(full_features)
+        
+        X_plot = np.array(X_plot)
+        
+        # Get probabilities for alternative 2 (alt 1 probability = 1 - alt 2 probability)
+        probs_alt2 = self.model.predict(X_plot, verbose=0).flatten()
+        probs_alt1 = 1 - probs_alt2
+        
+        # Create probability matrix
+        prob_matrix = np.column_stack([probs_alt1, probs_alt2])
+        
+        # Create the plot
+        plt.figure(figsize=figsize)
+        
+        colors = ['#FF6B6B', '#4ECDC4']
+        
+        for j in range(2):
+            if j == 0:
+                label = f"{alternative_names[j]} (baseline)"
+            else:
+                label = f"{alternative_names[j]} (varying {variable_name})"
+            plt.plot(variable_range, prob_matrix[:, j], 
+                    label=label, 
+                    linewidth=2.5,
+                    color=colors[j])
+        
+        plt.xlabel(f"{variable_name.capitalize()}")
+        plt.ylabel("Choice Probability")
+        plt.title(f"Choice Probabilities vs {variable_name.capitalize()} (FC-DNN Model)")
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+        plt.ylim(0, 1)
+        
+        # Add baseline information to the plot
+        baseline_str = ", ".join([f"{k}={v}" for k, v in baseline_data.items()])
+        plt.figtext(0.02, 0.02, f"Baseline: {baseline_str}", fontsize=8, alpha=0.7)
+        
+        plt.tight_layout()
+        plt.show()
+        
+        return prob_matrix
+        
+        plt.tight_layout()
+        plt.show()
+        
+        return prob_matrix

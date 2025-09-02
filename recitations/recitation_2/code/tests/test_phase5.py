@@ -31,7 +31,7 @@ def test_single_model_evaluation():
             verbose=True
         )
         
-        print(f"✅ Single model evaluation: {len(results)} fold results")
+        print(f"PASS Single model evaluation: {len(results)} fold results")
         
         # Check result structure
         if results:
@@ -40,12 +40,12 @@ def test_single_model_evaluation():
             assert hasattr(result, 'log_loss')
             assert hasattr(result, 'model_name')
             assert result.model_name == 'SimpleLogistic'
-            print("✅ Result structure validated")
+            print("PASS Result structure validated")
         
         return True
         
     except Exception as e:
-        print(f"❌ Single model evaluation failed: {e}")
+        print(f"FAIL Single model evaluation failed: {e}")
         return False
 
 
@@ -72,26 +72,26 @@ def test_multi_model_evaluation():
             verbose=True
         )
         
-        print(f"✅ Multi-model evaluation: {len(results_df)} total results")
-        print(f"✅ Summary shape: {summary_df.shape}")
+        print(f"PASS Multi-model evaluation: {len(results_df)} total results")
+        print(f"PASS Summary shape: {summary_df.shape}")
         
         # Check that we have results for each model
         if not results_df.empty:
             models_tested = results_df['model'].unique()
-            print(f"✅ Models tested: {list(models_tested)}")
+            print(f"PASS Models tested: {list(models_tested)}")
             
             # Check summary structure
             expected_cols = ['model', 'accuracy_mean', 'accuracy_std', 'log_loss_mean']
             for col in expected_cols:
                 if col in summary_df.columns:
-                    print(f"✅ Summary has {col}")
+                    print(f"PASS Summary has {col}")
                 else:
                     print(f"WARNING: Summary missing {col}")
         
         return True
         
     except Exception as e:
-        print(f"❌ Multi-model evaluation failed: {e}")
+        print(f"FAIL Multi-model evaluation failed: {e}")
         return False
 
 
@@ -108,11 +108,11 @@ def test_quick_comparison():
             n_folds=3
         )
         
-        print("✅ Quick comparison completed")
+        print("PASS Quick comparison completed")
         return True
         
     except Exception as e:
-        print(f"❌ Quick comparison failed: {e}")
+        print(f"FAIL Quick comparison failed: {e}")
         return False
 
 
@@ -128,16 +128,16 @@ def test_data_consistency():
         
         # Test that fold data is consistent
         fold_0_data = get_fold_data(0, return_individuals=True)
-        print("✅ Fold 0 data loaded successfully")
+        print("PASS Fold 0 data loaded successfully")
         
         # Check data shapes
         X_train, y_train, X_val, y_val = fold_0_data[:4]
-        print(f"✅ Fold 0: Train {X_train.shape}, Val {X_val.shape}")
+        print(f"PASS Fold 0: Train {X_train.shape}, Val {X_val.shape}")
         
         return True
         
     except Exception as e:
-        print(f"❌ Data consistency test failed: {e}")
+        print(f"FAIL Data consistency test failed: {e}")
         return False
 
 
@@ -157,17 +157,17 @@ def run_all_tests():
     total = len(tests)
     
     for test_name, test_func in tests:
-        print(f"\n📋 {test_name}")
+        print(f"\n {test_name}")
         print("-" * 30)
         
         try:
             if test_func():
                 passed += 1
-                print(f"✅ {test_name} PASSED")
+                print(f"PASS {test_name} PASSED")
             else:
-                print(f"❌ {test_name} FAILED")
+                print(f"FAIL {test_name} FAILED")
         except Exception as e:
-            print(f"❌ {test_name} CRASHED: {e}")
+            print(f"FAIL {test_name} CRASHED: {e}")
     
     print("\n" + "=" * 60)
     print(f"Phase 5 Results: {passed}/{total} tests passed")

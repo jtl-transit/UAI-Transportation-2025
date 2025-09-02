@@ -19,14 +19,14 @@ try:
     from models import get_available_models, create_model, list_models
     
     available = get_available_models()
-    print(f"✅ Available models: {available}")
+    print(f"Available models: {available}")
     
-    # Test detailed model listing
-    print("\n📋 Model Details:")
-    list_models(detailed=True)
+    # List detailed model information
+    print("\nModel Details:")
+    list_models()
     
 except Exception as e:
-    print(f"❌ Model registry failed: {e}")
+    print(f"Model registry failed: {e}")
 
 print("\n[2] Testing Data Loading Integration:")
 try:
@@ -34,21 +34,21 @@ try:
     
     # Prepare data
     info = prepare_data_pipeline(csv_path="../data/mlogit_Train_wide.csv", verbose=False)
-    print(f"✅ Data ready: {info['n_individuals']} individuals, {info['n_scenarios']} scenarios")
+    print(f"Data ready: {info['n_individuals']} individuals, {info['n_scenarios']} scenarios")
     
     # Get test data from first fold
     X_train, y_train, X_val, y_val = get_fold_data(0)
-    print(f"✅ Test data extracted: Train {X_train.shape}, Val {X_val.shape}")
+    print(f"Test data extracted: Train {X_train.shape}, Val {X_val.shape}")
     
     # Get extended data for models that need obs_ids and alternatives
     (X_train_ext, y_train_ext, X_val_ext, y_val_ext,
      train_ids, val_ids, train_obs_ids, val_obs_ids,
      train_alts, val_alts) = get_fold_data(0, return_individuals=True)
     
-    print(f"✅ Extended data ready for model testing")
+    print(f"Extended data ready for model testing")
     
 except Exception as e:
-    print(f"❌ Data integration failed: {e}")
+    print(f"Data integration failed: {e}")
 
 print("\n[3] Testing Individual Model Creation & Training:")
 
@@ -87,37 +87,37 @@ failed_models = []
 
 for model_name, test_config in model_tests.items():
     try:
-        print(f"\n🔸 Testing {model_name}:")
+        print(f"\nTesting {model_name}:")
         
         # Create model
         model = create_model(model_name, **test_config['params'])
-        print(f"  ✅ Model created: {model.__class__.__name__}")
+        print(f"  Model created: {model.__class__.__name__}")
         
         # Fit model
         fit_args = test_config['fit_args']
         fit_kwargs = test_config.get('fit_kwargs', {})
         model.fit(*fit_args, **fit_kwargs)
-        print(f"  ✅ Model fitted successfully")
+        print(f"  Model fitted successfully")
         
         # Test prediction
         predict_args = test_config['predict_args']
         predict_kwargs = test_config.get('predict_kwargs', {})
         predictions = model.predict_proba(*predict_args, **predict_kwargs)
-        print(f"  ✅ Predictions shape: {predictions.shape}")
+        print(f"  Predictions shape: {predictions.shape}")
         
         # Validate prediction properties
         if len(predictions.shape) == 1:
             # Binary probability predictions
-            print(f"  ✅ Prediction range: [{predictions.min():.3f}, {predictions.max():.3f}]")
+            print(f"  Prediction range: [{predictions.min():.3f}, {predictions.max():.3f}]")
         else:
             # Multi-class probability predictions
-            print(f"  ✅ Prediction shape: {predictions.shape}")
-            print(f"  ✅ Row sums around 1.0: {np.allclose(predictions.sum(axis=1), 1.0)}")
+            print(f"  Prediction shape: {predictions.shape}")
+            print(f"  Row sums around 1.0: {np.allclose(predictions.sum(axis=1), 1.0)}")
         
         successful_models.append(model_name)
         
     except Exception as e:
-        print(f"  ❌ {model_name} failed: {e}")
+        print(f"  {model_name} failed: {e}")
         failed_models.append((model_name, str(e)))
 
 print(f"\n[4] Testing Model API Consistency:")
@@ -149,18 +149,18 @@ for model_name in successful_models:
         })
 
 for test in api_tests:
-    status = "✅" if test['api_compliant'] else "❌"
+    status = "PASS" if test['api_compliant'] else "FAIL"
     print(f"  {status} {test['model']}: fit={test['has_fit']}, predict={test['has_predict']}")
 
 print(f"\nPhase 2 Results Summary:")
 print("=" * 50)
-print(f"✅ Successful models: {len(successful_models)}/{len(model_tests)}")
+print(f"Successful models: {len(successful_models)}/{len(model_tests)}")
 print(f"   Working: {', '.join(successful_models)}")
 
 if failed_models:
-    print(f"❌ Failed models: {len(failed_models)}")
+    print(f"Failed models: {len(failed_models)}")
     for model_name, error in failed_models:
         print(f"   {model_name}: {error}")
 
 compliant_models = [t['model'] for t in api_tests if t['api_compliant']]
-print(f"✅ API compliant models: {len(compliant_models)}/{len(successful_models)}")
+print(f"API compliant models: {len(compliant_models)}/{len(successful_models)}")

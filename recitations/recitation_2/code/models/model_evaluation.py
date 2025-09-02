@@ -349,7 +349,7 @@ if __name__ == "__main__":
             verbose=True
         )
         
-        print(f"✅ Single model test: {len(results)} fold results")
+        print(f"PASS Single model test: {len(results)} fold results")
         
         # Test multi-model evaluation
         quick_model_comparison(
@@ -358,7 +358,7 @@ if __name__ == "__main__":
         )
         
     except Exception as e:
-        print(f"❌ Evaluation test failed: {e}")
+        print(f"FAIL Evaluation test failed: {e}")
 
 # Evaluate across your existing 5 folds
 # results_df, coefs_df = evaluate_simple_logistic_cv(get_fold_data)
