@@ -171,13 +171,7 @@ def run_all_tests():
     
     print("\n" + "=" * 60)
     print(f"Phase 5 Results: {passed}/{total} tests passed")
-    
-    if passed == total:
-        print("Phase 5: Unified Evaluation Framework - COMPLETE!")
-        print("All models can now be evaluated with unified k-fold CV!")
-    else:
-        print("Phase 5: Some issues remain")
-    
+
     return passed == total
 
 

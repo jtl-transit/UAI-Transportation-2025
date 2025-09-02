@@ -38,7 +38,7 @@ def main():
     # Demonstrate loading models separately
     print("Loading Models Separately:")
     models = {}
-    for model_name in ['SimpleLogistic', 'MultinomialLogit', 'ASU_DNN']:
+    for model_name in ['SimpleLogistic', 'MultinomialLogit', 'FullyConnectedDNN', 'ASU_DNN']:
         try:
             model = create_model(model_name)
             models[model_name] = model
@@ -46,7 +46,7 @@ def main():
         except Exception as e:
             print(f"  ❌ {model_name}: {e}")
     
-    print(f"\nSuccessfully loaded {len(models)}/3 models")
+    print(f"\nSuccessfully loaded {len(models)}/4 models")
     print()
     
     # Demonstrate unified k-fold cross-validation evaluation

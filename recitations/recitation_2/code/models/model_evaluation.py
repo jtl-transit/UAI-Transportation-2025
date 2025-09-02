@@ -289,6 +289,7 @@ def quick_model_comparison(models_dict: Dict[str, callable] = None,
         models_dict = {
             'SimpleLogistic': lambda: create_model('SimpleLogistic'),
             'MultinomialLogit': lambda: create_model('MultinomialLogit'),
+            'FullyConnectedDNN': lambda: create_model('FullyConnectedDNN'),
             'ASU_DNN': lambda: create_model('ASU_DNN')
         }
     

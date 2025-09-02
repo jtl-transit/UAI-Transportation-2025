@@ -526,18 +526,3 @@ def prepare_data_pipeline(csv_path: Optional[str] = None,
     """Legacy function for backward compatibility. Use DataManager.prepare_data_pipeline() instead."""
     manager = get_default_manager()
     return manager.prepare_data_pipeline(csv_path, feature_cols, n_folds, verbose)
-
-
-# Legacy global access for module-level imports (still needed by model_evaluation.py)
-cv_folds = None
-individual_ids = None
-df_long = None
-df_raw = None
-
-def _update_globals_from_manager(manager: DataManager):
-    """Update global variables for backward compatibility."""
-    global cv_folds, individual_ids, df_long, df_raw
-    cv_folds = manager.cv_folds
-    individual_ids = manager.individual_ids
-    df_long = manager.df_long  
-    df_raw = manager.df_raw

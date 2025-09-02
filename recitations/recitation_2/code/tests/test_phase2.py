@@ -164,18 +164,3 @@ if failed_models:
 
 compliant_models = [t['model'] for t in api_tests if t['api_compliant']]
 print(f"✅ API compliant models: {len(compliant_models)}/{len(successful_models)}")
-
-if len(successful_models) >= 2:
-    print(f"\nPhase 2 SUCCESS: Ready for unified evaluation!")
-    print(f"   - {len(successful_models)} models working")
-    print(f"   - {len(compliant_models)} API compliant")
-    print(f"   - Ready for Phase 5: Cross-validation framework")
-else:
-    print(f"\nPhase 2 PARTIAL: Need to fix remaining models")
-    print(f"   - Continue debugging failed models")
-    print(f"   - Standardize API signatures")
-
-print(f"\nNext Steps:")
-print(f"   - Fix any failed model imports/training")
-print(f"   - Implement model wrappers for signature standardization")
-print(f"   - Move to Phase 5: Unified evaluation framework")
