@@ -24,7 +24,7 @@ def main():
     from models import get_available_models, create_model
     
     # Show available models
-    print("📋 Available Models:")
+    print(" Available Models:")
     available_models = get_available_models()
     for i, model_name in enumerate(available_models, 1):
         try:
@@ -42,9 +42,9 @@ def main():
         try:
             model = create_model(model_name)
             models[model_name] = model
-            print(f"  ✅ {model_name}: {type(model).__name__}")
+            print(f"  PASS {model_name}: {type(model).__name__}")
         except Exception as e:
-            print(f"  ❌ {model_name}: {e}")
+            print(f"  FAIL {model_name}: {e}")
     
     print(f"\nSuccessfully loaded {len(models)}/4 models")
     print()
@@ -60,14 +60,14 @@ def main():
         )
         
         print("\nSUCCESS! User goal achieved!")
-        print("✅ Models loaded separately")
-        print("✅ All models evaluated in one k-fold CV run")
-        print("✅ Comprehensive comparison with rankings")
-        print("✅ Person-level splitting prevents data leakage")
-        print("✅ Consistent metrics across all models")
+        print("PASS Models loaded separately")
+        print("PASS All models evaluated in one k-fold CV run")
+        print("PASS Comprehensive comparison with rankings")
+        print("PASS Person-level splitting prevents data leakage")
+        print("PASS Consistent metrics across all models")
         
     except Exception as e:
-        print(f"\n❌ Evaluation failed: {e}")
+        print(f"\nFAIL Evaluation failed: {e}")
         return False
     
     print("\n" + "=" * 60)

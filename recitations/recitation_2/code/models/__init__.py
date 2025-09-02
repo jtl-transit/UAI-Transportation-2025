@@ -201,15 +201,15 @@ def list_models(detailed: bool = False) -> None:
     available = get_available_models()
     for model_name in available:
         description = models_info.get(model_name, 'No description available')
-        print(f"🔸 {model_name}: {description}")
+        print(f"- {model_name}: {description}")
         
         if detailed:
             try:
                 model = create_model(model_name)
-                print(f"   Status: ✅ Available")
+                print(f"   Status: PASS Available")
                 print(f"   Class: {model.__class__.__name__}")
             except Exception as e:
-                print(f"   Status: ❌ Error: {e}")
+                print(f"   Status: FAIL Error: {e}")
             print()
 
 
@@ -265,17 +265,17 @@ if __name__ == "__main__":
     # Test data loading
     try:
         info = prepare_data_pipeline(verbose=False)
-        print(f"✅ Data loading: {info['long_shape']} observations ready")
+        print(f"PASS Data loading: {info['long_shape']} observations ready")
     except Exception as e:
-        print(f"❌ Data loading failed: {e}")
+        print(f"FAIL Data loading failed: {e}")
     
     # Test model creation
     available = get_available_models()
     if available:
         try:
             model = create_model(available[0])
-            print(f"✅ Model creation: {model.__class__.__name__}")
+            print(f"PASS Model creation: {model.__class__.__name__}")
         except Exception as e:
-            print(f"❌ Model creation failed: {e}")
+            print(f"FAIL Model creation failed: {e}")
     
     print(f"\nPackage ready! Available models: {available}")

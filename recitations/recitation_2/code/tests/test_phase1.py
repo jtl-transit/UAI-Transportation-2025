@@ -21,7 +21,7 @@ try:
     # Test data preparation - use explicit path to avoid auto-detection issues
     data_path = "../data/mlogit_Train_wide.csv"
     info = prepare_data_pipeline(csv_path=data_path, verbose=False)
-    print(f"✅ Data preparation successful: {info['long_shape']} observations")
+    print(f"Data preparation successful: {info['long_shape']} observations")
     print(f"   - {info['n_individuals']} individuals")
     print(f"   - {info['n_scenarios']} choice scenarios") 
     print(f"   - {info['n_alternatives']} alternatives per scenario")
@@ -29,24 +29,26 @@ try:
     
     # Test fold data extraction
     X_train, y_train, X_val, y_val = get_fold_data(0)
-    print(f"✅ Fold data extraction: Train {X_train.shape}, Val {X_val.shape}")
+    print(f"Fold data extraction: Train {X_train.shape}, Val {X_val.shape}")
     
 except Exception as e:
-    print(f"❌ Data loading failed: {e}")
+    print(f"Data loading failed: {e}")
 
 print("\n[2] Testing Model Registry (Basic):")
 try:
     from models import get_available_models, create_model
     
     available = get_available_models()
-    print(f"✅ Available models: {available}")
+    print(f"Available models: {available}")
     
-    if available:
-        # Try to create first available model
-        model_name = available[0]
-        print(f"   Attempting to create {model_name}...")
-        # Test without actually creating to avoid import issues
-        print(f"✅ Model creation framework ready")
+    # Test model creation
+    simple_logistic = create_model("SimpleLogistic")
+    if simple_logistic:
+        print(f"Attempting to create SimpleLogistic...")
+        print(f"Model creation framework ready")
     
 except Exception as e:
-    print(f"❌ Model registry test failed: {e}")
+    print(f"Model registry test failed: {e}")
+
+print("\n[3] Summary:")
+print("Phase 1 COMPLETE: Data Loading & Preprocessing Infrastructure")

@@ -4,6 +4,7 @@ warnings.filterwarnings('ignore')
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 from scipy.optimize import minimize
 from scipy.special import logsumexp
@@ -297,130 +298,6 @@ class MultinomialLogit:
             # Fallback to random initialization
             n_params = (self.n_alts_ - 1) + self.n_features_ if self.include_constants else self.n_features_
             return np.random.default_rng(self.random_state).normal(0.0, 0.01, n_params)
-
-        # Smart initialization strategy
-        n_params = (self.n_alts_ - 1) + self.n_features_ if self.include_constants else self.n_features_
-        
-        print(f"DEBUG: n_params = {n_params}, n_alts = {self.n_alts_}, n_features = {self.n_features_}")
-        
-        # Multiple initialization strategies for robustness
-        initialization_strategies = [
-            # Strategy 1: Small random values around zero
-            lambda: np.random.default_rng(self.random_state).normal(0.0, 0.01, n_params),
-            # Strategy 2: Initialize with simple logistic regression coefficients
-            lambda: self._smart_initialization(Xs, y),
-            # Strategy 3: Larger random initialization 
-            lambda: np.random.default_rng(self.random_state).normal(0.0, 0.5, n_params),
-        ]
-        
-        # Try multiple optimization methods for robustness
-        optimization_methods = [
-            {'method': 'BFGS', 'jac': True},
-            {'method': 'L-BFGS-B', 'jac': True},
-            {'method': 'Newton-CG', 'jac': True},
-            {'method': 'BFGS', 'jac': False},  # Fallback without gradients
-        ]
-        
-        best_result = None
-        best_ll = -np.inf
-        
-        print(f"DEBUG: Starting optimization with {len(self.groups_)} choice sets")
-        
-        for i, init_strategy in enumerate(initialization_strategies):
-            theta0 = init_strategy()
-            print(f"DEBUG: Trying initialization strategy {i+1}, theta0 shape: {theta0.shape}")
-            
-            for j, opt_config in enumerate(optimization_methods):
-                try:
-                    print(f"DEBUG: Trying optimization method {j+1}: {opt_config['method']}")
-                    # Set up optimization options
-                    options = {
-                        'maxiter': self.maxiter,
-                        'disp': False,
-                        'gtol': 1e-6,
-                        'ftol': 1e-9
-                    }
-                    
-                    if opt_config['jac']:
-                        result = minimize(
-                            fun=self._neg_loglik_and_grad,
-                            x0=theta0,
-                            args=(Xs, y, obs_ids, alt_norm),
-                            method=opt_config['method'],
-                            jac=True,
-                            options=options
-                        )
-                    else:
-                        result = minimize(
-                            fun=self._neg_loglik,
-                            x0=theta0,
-                            args=(Xs, y, obs_ids, alt_norm),
-                            method=opt_config['method'],
-                            options=options
-                        )
-                    
-                    print(f"DEBUG: Optimization completed, success: {result.success}, fun: {result.fun}")
-                    
-                    # Check if this is the best result so far
-                    current_ll = -result.fun
-                    if result.success and current_ll > best_ll:
-                        best_result = result
-                        best_ll = current_ll
-                        print(f"DEBUG: New best result found, LL: {best_ll}")
-                        
-                    # If we got a good convergence, we can stop early
-                    if result.success and result.fun < 1e-6:
-                        print("DEBUG: Good convergence achieved, stopping early")
-                        break
-                        
-                except Exception as e:
-                    print(f"DEBUG: Exception in optimization: {e}")
-                    # If this method fails, try the next one
-                    continue
-            
-            # If we found a good solution, no need to try other initializations
-            if best_result is not None and best_result.success:
-                print("DEBUG: Found good solution, stopping initialization search")
-                break
-        
-        # Use the best result found
-        if best_result is None:
-            print("DEBUG: No good result found, using fallback")
-            # Last resort: simple BFGS with basic initialization
-            theta0 = np.random.default_rng(self.random_state).normal(0.0, 0.01, n_params)
-            best_result = minimize(
-                fun=self._neg_loglik,
-                x0=theta0,
-                args=(Xs, y, obs_ids, alt_norm),
-                method="BFGS",
-                options={"maxiter": self.maxiter, "disp": False}
-            )
-            print(f"DEBUG: Fallback result - success: {best_result.success}, fun: {best_result.fun}")
-
-        # Store results from the best optimization
-        print(f"DEBUG: Storing results from best optimization")
-        self.params = best_result.x
-        self.convergence_info = best_result
-        self.log_likelihood = -best_result.fun
-
-        # Enhanced convergence diagnostics
-        convergence_status = self._assess_convergence(best_result)
-        print(f"DEBUG: Convergence status: {convergence_status}")
-
-        # AIC/BIC per number of *choice sets* (not rows)
-        n_sets = len(self.groups_)
-        k = n_params
-        self.aic = 2 * k - 2 * self.log_likelihood
-        self.bic = k * np.log(n_sets) - 2 * self.log_likelihood
-
-        print("MNL fitted",
-              f"| LL = {self.log_likelihood:.3f}",
-              f"| AIC = {self.aic:.2f}",
-              f"| BIC = {self.bic:.2f}",
-              f"| Converged = {convergence_status}")
-
-        print(f"DEBUG: About to return self")
-        return self
     
     def _assess_convergence(self, result):
         """
@@ -498,3 +375,109 @@ class MultinomialLogit:
             "Parameter": self.param_names,
             "Estimate": self.params
         })
+
+    def plot_choice_probabilities(self, variable_name, variable_range, baseline_data, 
+                                 alternative_names=None, figsize=(10, 6)):
+        """
+        Plot choice probabilities as a function of a varying attribute.
+        
+        Parameters:
+        -----------
+        variable_name : str
+            Name of the variable to vary ('price', 'time', 'change', or 'comfort')
+        variable_range : array-like
+            Range of values for the variable to plot
+        baseline_data : dict
+            Dictionary with baseline values for all variables. 
+            Keys should be: 'price', 'time', 'change', 'comfort'
+            Example: {'price': 10, 'time': 30, 'change': 1, 'comfort': 3}
+        alternative_names : list, optional
+            Names for the alternatives. If None, uses 'Alt 1', 'Alt 2', etc.
+        figsize : tuple
+            Figure size (width, height)
+        """
+        if self.params is None:
+            raise ValueError("Model must be fitted before plotting.")
+        
+        import matplotlib.pyplot as plt
+        
+        # Set up alternative names
+        if alternative_names is None:
+            alternative_names = [f"Alt {i}" for i in range(1, self.n_alts_ + 1)]
+        elif len(alternative_names) != self.n_alts_:
+            raise ValueError(f"Expected {self.n_alts_} alternative names, got {len(alternative_names)}")
+        
+        # Define feature order as expected by the model
+        feature_order = ['price', 'time', 'change', 'comfort']
+        
+        # Validate inputs
+        if variable_name not in feature_order:
+            raise ValueError(f"variable_name must be one of {feature_order}")
+        
+        for feature in feature_order:
+            if feature not in baseline_data:
+                raise ValueError(f"baseline_data must contain '{feature}'")
+        
+        # Create synthetic data for prediction
+        n_points = len(variable_range)
+        
+        # Create feature matrix for the choice set
+        X_plot = []
+        obs_ids = []
+        alternatives = []
+        
+        for i, var_value in enumerate(variable_range):
+            # Create one choice set per variable value
+            for j in range(self.n_alts_):
+                # Create feature vector for this alternative in the expected order
+                features = []
+                for feature_name in feature_order:
+                    if feature_name == variable_name and j == 1:  # Only vary for alternative 2
+                        features.append(var_value)
+                    else:
+                        features.append(baseline_data[feature_name])
+                
+                X_plot.append(features)
+                obs_ids.append(f"plot_{i}")  # Unique observation ID for this choice set
+                alternatives.append(j + 1)  # Alternatives numbered 1, 2, ..., J
+        
+        X_plot = np.array(X_plot)
+        obs_ids = np.array(obs_ids)
+        alternatives = np.array(alternatives)
+        
+        # Get probabilities
+        probs = self.predict_proba(X_plot, obs_ids, alternatives)
+        
+        # Reshape probabilities by choice set and alternative
+        prob_matrix = probs.reshape(n_points, self.n_alts_)
+        
+        # Create the plot
+        plt.figure(figsize=figsize)
+        
+        colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8']
+        
+        for j in range(self.n_alts_):
+            if j == 0:
+                label = f"{alternative_names[j]} (baseline)"
+            else:
+                label = f"{alternative_names[j]} (varying {variable_name})"
+            plt.plot(variable_range, prob_matrix[:, j], 
+                    label=label, 
+                    linewidth=2.5,
+                    color=colors[j % len(colors)])
+        
+        plt.xlabel(f"{variable_name.capitalize()}")
+        plt.ylabel("Choice Probability")
+        plt.title(f"Choice Probabilities vs {variable_name.capitalize()} (MNL Model)")
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+        plt.ylim(0, 1)
+        
+        # Add baseline information to the plot
+        baseline_str = ", ".join([f"{k}={v}" for k, v in baseline_data.items()])
+        plt.figtext(0.02, 0.02, f"Baseline: {baseline_str}", fontsize=8, alpha=0.7)
+        
+        plt.tight_layout()
+        plt.show()
+        
+        return prob_matrix

@@ -126,7 +126,7 @@ class ASUDNNGeneral:
             kept = [i for i, Ji in enumerate(J_sizes) if Ji == J_mode]
             dropped = len(J_sizes) - len(kept)
             if dropped > 0:
-                print(f"[ASUDNNGeneralJ] Mixed J {list(unique)}; keeping J={J_mode} sets ({len(kept)}), dropping {dropped}.")
+                print(f"[ASUDNNGeneral] Mixed J {list(unique)}; keeping J={J_mode} sets ({len(kept)}), dropping {dropped}.")
             sets_X = [sets_X[i] for i in kept]
             sets_y = [sets_y[i] for i in kept]
             sets_idx = [sets_idx[i] for i in kept]
@@ -230,7 +230,7 @@ class ASUDNNGeneral:
 
         self.model = self._build_model(self.J_, self.input_dim_)
         if verbose:
-            print(f"[ASUDNNGeneralJ] J={self.J_} | feats/alt={self.input_dim_} | sets={len(y_sets)} | params={self.model.count_params():,}")
+            print(f"[ASUDNNGeneral] J={self.J_} | feats/alt={self.input_dim_} | sets={len(y_sets)} | params={self.model.count_params():,}")
 
         val_tuple = None
         if validation_data is not None:
@@ -320,3 +320,109 @@ class ASUDNNGeneral:
 
         plt.tight_layout()
         plt.show()
+
+    def plot_choice_probabilities(self, variable_name, variable_range, baseline_data, 
+                                 alternative_names=None, figsize=(10, 6)):
+        """
+        Plot choice probabilities as a function of a varying attribute.
+        
+        Parameters:
+        -----------
+        variable_name : str
+            Name of the variable to vary ('price', 'time', 'change', or 'comfort')
+        variable_range : array-like
+            Range of values for the variable to plot
+        baseline_data : dict
+            Dictionary with baseline values for all variables. 
+            Keys should be: 'price', 'time', 'change', 'comfort'
+            Example: {'price': 10, 'time': 30, 'change': 1, 'comfort': 3}
+        alternative_names : list, optional
+            Names for the alternatives. If None, uses 'Alt 1', 'Alt 2', etc.
+        figsize : tuple
+            Figure size (width, height)
+        """
+        if self.model is None:
+            raise ValueError("Model must be fitted before plotting.")
+        
+        import matplotlib.pyplot as plt
+        
+        # Set up alternative names
+        if alternative_names is None:
+            alternative_names = [f"Alt {i}" for i in range(1, self.J_ + 1)]
+        elif len(alternative_names) != self.J_:
+            raise ValueError(f"Expected {self.J_} alternative names, got {len(alternative_names)}")
+        
+        # Define feature order as expected by the model
+        feature_order = ['price', 'time', 'change', 'comfort']
+        
+        # Validate inputs
+        if variable_name not in feature_order:
+            raise ValueError(f"variable_name must be one of {feature_order}")
+        
+        for feature in feature_order:
+            if feature not in baseline_data:
+                raise ValueError(f"baseline_data must contain '{feature}'")
+        
+        # Create synthetic data for prediction
+        n_points = len(variable_range)
+        
+        # Create feature matrix for the choice set
+        X_plot = []
+        obs_ids = []
+        alternatives = []
+        
+        for i, var_value in enumerate(variable_range):
+            # Create one choice set per variable value
+            for j in range(self.J_):
+                # Create feature vector for this alternative in the expected order
+                features = []
+                for feature_name in feature_order:
+                    if feature_name == variable_name and j == 1:  # Only vary for alternative 2
+                        features.append(var_value)
+                    else:
+                        features.append(baseline_data[feature_name])
+                
+                X_plot.append(features)
+                obs_ids.append(f"plot_{i}")  # Unique observation ID for this choice set
+                alternatives.append(j + 1)  # Alternatives numbered 1, 2, ..., J
+        
+        X_plot = np.array(X_plot)
+        obs_ids = np.array(obs_ids)
+        alternatives = np.array(alternatives)
+        
+        # Get probabilities
+        probs = self.predict_proba(X_plot, obs_ids, alternatives)
+        
+        # Reshape probabilities by choice set and alternative
+        prob_matrix = probs.reshape(n_points, self.J_)
+        
+        # Create the plot
+        plt.figure(figsize=figsize)
+        
+        colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8']
+        
+        for j in range(self.J_):
+            if j == 0:
+                label = f"{alternative_names[j]} (baseline)"
+            else:
+                label = f"{alternative_names[j]} (varying {variable_name})"
+            plt.plot(variable_range, prob_matrix[:, j], 
+                    label=label, 
+                    linewidth=2.5,
+                    color=colors[j % len(colors)])
+        
+        plt.xlabel(f"{variable_name.capitalize()}")
+        plt.ylabel("Choice Probability")
+        plt.title(f"Choice Probabilities vs {variable_name.capitalize()} (ASU-DNN Model)")
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+        plt.ylim(0, 1)
+        
+        # Add baseline information to the plot
+        baseline_str = ", ".join([f"{k}={v}" for k, v in baseline_data.items()])
+        plt.figtext(0.02, 0.02, f"Baseline: {baseline_str}", fontsize=8, alpha=0.7)
+        
+        plt.tight_layout()
+        plt.show()
+        
+        return prob_matrix

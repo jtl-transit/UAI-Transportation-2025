@@ -1,0 +1,193 @@
+"""
+ASU-DNN General Model Architecture Visualization
+===============================================
+
+The Alternative-Specific Utility Deep Neural Network (ASU-DNN) for J alternatives.
+
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                           ASU-DNN GENERAL ARCHITECTURE                          │
+└─────────────────────────────────────────────────────────────────────────────────┘
+
+INPUT STAGE: Raw Choice Set Data
+─────────────────────────────────
+┌─────────────────────────────────────────────────────────┐
+│ Choice Set (n_obs, J_alternatives, 4_features)         │
+│                                                         │
+│ Alt 1: [price₁, time₁, comfort₁, change₁]              │
+│ Alt 2: [price₂, time₂, comfort₂, change₂]              │
+│ ...                                                     │
+│ Alt J: [priceⱼ, timeⱼ, comfortⱼ, changeⱼ]              │
+└─────────────────────────────────────────────────────────┘
+                           │
+                           ▼
+
+FEATURE ENGINEERING STAGE
+─────────────────────────────────
+┌─────────────────────────────────────────────────────────┐
+│ 1. Advanced Features (if enabled):                     │
+│    [price, time, comfort, change,                      │
+│     log(price), log(time), price×time, comfort×change] │
+│    → (n_obs, J, 8_features)                            │
+└─────────────────────────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────┐
+│ 2. Relative Features (if enabled):                     │
+│    Reference Alt = min(price) alternative              │
+│    [original_features, features - reference_features]  │
+│    → (n_obs, J, 16_features)                           │
+└─────────────────────────────────────────────────────────┘
+                           │
+                           ▼
+
+NORMALIZATION STAGE
+─────────────────────────────────
+┌─────────────────────────────────────────────────────────┐
+│ StandardScaler applied to all features                 │
+│ → (n_obs, J, input_dim) [normalized]                   │
+└─────────────────────────────────────────────────────────┘
+                           │
+                           ▼
+
+UTILITY TOWER ARCHITECTURE
+─────────────────────────────────
+
+Option A: SHARED LAYERS (shared_layers=True, default)
+┌─────────────────────────────────────────────────────────┐
+│                                                         │
+│  Input: (batch, J, input_dim)                          │
+│         │                                               │
+│         ▼                                               │
+│  ┌─────────────────────────┐                           │
+│  │     Shared Tower        │                           │
+│  │ ┌─────────────────────┐ │  Applied to each          │
+│  │ │ Input (input_dim)   │ │  alternative via          │
+│  │ │        │            │ │  TimeDistributed          │
+│  │ │        ▼            │ │                           │
+│  │ │ BatchNormalization  │ │                           │
+│  │ │        │            │ │                           │
+│  │ │        ▼            │ │                           │
+│  │ │ Dense(128) + ReLU   │ │                           │
+│  │ │        │            │ │                           │
+│  │ │        ▼            │ │                           │
+│  │ │ BatchNorm + Dropout │ │                           │
+│  │ │        │            │ │                           │
+│  │ │        ▼            │ │                           │
+│  │ │ Dense(64) + ReLU    │ │                           │
+│  │ │        │            │ │                           │
+│  │ │        ▼            │ │                           │
+│  │ │ BatchNorm + Dropout │ │                           │
+│  │ │        │            │ │                           │
+│  │ │        ▼            │ │                           │
+│  │ │ Dense(32) + ReLU    │ │                           │
+│  │ │        │            │ │                           │
+│  │ │        ▼            │ │                           │
+│  │ │ BatchNorm + Dropout │ │                           │
+│  │ │        │            │ │                           │
+│  │ │        ▼            │ │                           │
+│  │ │ Dense(1) Linear     │ │  → Utility Score         │
+│  │ └─────────────────────┘ │                           │
+│  └─────────────────────────┘                           │
+│         │                                               │
+│         ▼                                               │
+│  Output: (batch, J, 1) → Reshape → (batch, J)          │
+└─────────────────────────────────────────────────────────┘
+
+
+Option B: SEPARATE LAYERS (shared_layers=False)
+┌─────────────────────────────────────────────────────────┐
+│                                                         │
+│  Input: (batch, J, input_dim)                          │
+│         │                                               │
+│         ▼                                               │
+│  ┌─────────────┐  ┌─────────────┐       ┌─────────────┐ │
+│  │  Alt 1      │  │  Alt 2      │  ...  │  Alt J      │ │
+│  │  Tower      │  │  Tower      │       │  Tower      │ │
+│  │ ┌─────────┐ │  │ ┌─────────┐ │       │ ┌─────────┐ │ │
+│  │ │Input(p) │ │  │ │Input(p) │ │       │ │Input(p) │ │ │
+│  │ │    │    │ │  │ │    │    │ │       │ │    │    │ │ │
+│  │ │    ▼    │ │  │ │    ▼    │ │       │ │    ▼    │ │ │
+│  │ │BatchNorm│ │  │ │BatchNorm│ │       │ │BatchNorm│ │ │
+│  │ │    │    │ │  │ │    │    │ │       │ │    │    │ │ │
+│  │ │    ▼    │ │  │ │    ▼    │ │       │ │    ▼    │ │ │
+│  │ │Dense128 │ │  │ │Dense128 │ │       │ │Dense128 │ │ │
+│  │ │ +ReLU   │ │  │ │ +ReLU   │ │       │ │ +ReLU   │ │ │
+│  │ │    │    │ │  │ │    │    │ │       │ │    │    │ │ │
+│  │ │    ▼    │ │  │ │    ▼    │ │       │ │    ▼    │ │ │
+│  │ │BatchNorm│ │  │ │BatchNorm│ │       │ │BatchNorm│ │ │
+│  │ │+Dropout │ │  │ │+Dropout │ │       │ │+Dropout │ │ │
+│  │ │    │    │ │  │ │    │    │ │       │ │    │    │ │ │
+│  │ │    ▼    │ │  │ │    ▼    │ │       │ │    ▼    │ │ │
+│  │ │Dense64  │ │  │ │Dense64  │ │       │ │Dense64  │ │ │
+│  │ │ +ReLU   │ │  │ │ +ReLU   │ │       │ │ +ReLU   │ │ │
+│  │ │    │    │ │  │ │    │    │ │       │ │    │    │ │ │
+│  │ │    ▼    │ │  │ │    ▼    │ │       │ │    ▼    │ │ │
+│  │ │BatchNorm│ │  │ │BatchNorm│ │       │ │BatchNorm│ │ │
+│  │ │+Dropout │ │  │ │+Dropout │ │       │ │+Dropout │ │ │
+│  │ │    │    │ │  │ │    │    │ │       │ │    │    │ │ │
+│  │ │    ▼    │ │  │ │    ▼    │ │       │ │    ▼    │ │ │
+│  │ │Dense32  │ │  │ │Dense32  │ │       │ │Dense32  │ │ │
+│  │ │ +ReLU   │ │  │ │ +ReLU   │ │       │ │ +ReLU   │ │ │
+│  │ │    │    │ │  │ │    │    │ │       │ │    │    │ │ │
+│  │ │    ▼    │ │  │ │    ▼    │ │       │ │    ▼    │ │ │
+│  │ │BatchNorm│ │  │ │BatchNorm│ │       │ │BatchNorm│ │ │
+│  │ │+Dropout │ │  │ │+Dropout │ │       │ │+Dropout │ │ │
+│  │ │    │    │ │  │ │    │    │ │       │ │    │    │ │ │
+│  │ │    ▼    │ │  │ │    ▼    │ │       │ │    ▼    │ │ │
+│  │ │Dense(1) │ │  │ │Dense(1) │ │       │ │Dense(1) │ │ │
+│  │ │ Linear  │ │  │ │ Linear  │ │       │ │ Linear  │ │ │
+│  │ └─────────┘ │  │ └─────────┘ │       │ └─────────┘ │ │
+│  └─────────────┘  └─────────────┘       └─────────────┘ │
+│         │                │                      │       │
+│         ▼                ▼                      ▼       │
+│    Utility₁         Utility₂              Utilityⱼ     │
+│         │                │                      │       │
+│         └────────────────┼──────────────────────┘       │
+│                          ▼                              │
+│                   Concatenate                           │
+│                          │                              │
+│                          ▼                              │
+│                 Output: (batch, J)                      │
+└─────────────────────────────────────────────────────────┘
+
+OUTPUT STAGE: Choice Probabilities
+─────────────────────────────────
+┌─────────────────────────────────────────────────────────┐
+│                                                         │
+│  Utilities: (batch, J)                                 │
+│         │                                               │
+│         ▼                                               │
+│  ┌─────────────────────────┐                           │
+│  │       SOFTMAX           │                           │
+│  │                         │                           │
+│  │  P(alt_j) = exp(U_j)    │                           │
+│  │           ──────────────  │                           │
+│  │           Σ exp(U_k)    │                           │
+│  │            k=1...J      │                           │
+│  └─────────────────────────┘                           │
+│         │                                               │
+│         ▼                                               │
+│  Choice Probabilities: (batch, J)                      │
+│  [P(alt_1), P(alt_2), ..., P(alt_J)]                  │
+│                                                         │
+│  where Σ P(alt_j) = 1.0                               │
+│       j=1...J                                           │
+└─────────────────────────────────────────────────────────┘
+
+KEY FEATURES:
+─────────────
+• Input: Choice sets with J alternatives, each with 4+ features
+• Feature Engineering: Advanced features (logs, interactions) + relative features
+• Architecture: Deep neural networks with batch normalization and dropout
+• Shared vs Separate: One tower shared across alternatives OR separate towers
+• Output: Multinomial choice probabilities via softmax activation
+• Training: Sparse categorical crossentropy loss with Adam optimizer
+
+TYPICAL DIMENSIONS (example with J=2, default config):
+─────────────────────────────────────────────────────
+• Raw Input: (batch, 2, 4)        # 2 alts, 4 features each
+• Advanced:  (batch, 2, 8)        # + log and interaction features  
+• Relative:  (batch, 2, 16)       # + relative-to-reference features
+• Tower Output: (batch, 2, 1)     # utility for each alternative
+• Final Output: (batch, 2)        # choice probabilities [P(alt1), P(alt2)]
+"""
