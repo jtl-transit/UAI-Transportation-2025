@@ -17,6 +17,7 @@ dependencies = [
     "biogeme",
     "jupyter",
     "tqdm",
+    "tensorflow>=2.11.1",
 ]
 
 [tool.setuptools]
