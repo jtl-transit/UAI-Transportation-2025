@@ -1,7 +1,8 @@
 # AI for Transportation | Recitation 3 - Multimodal Machine Learning for Transit Data
 
-[**Homework**](../../homeworks/homework_3.pdf)
+[**Worksheet**](./worksheet_3.pdf)
 [**Recitation Slides**](./recitation_3_slides.pdf)
+**Recitation Recording TBD**
 [**Lecture**](../../lectures/lecture_3.md)
 
 <a target="_blank" href="https://colab.research.google.com/github/jtl-transit/UAI-Transportation-2025/blob/main/recitations/recitation_3/recitation_3_code.ipynb">

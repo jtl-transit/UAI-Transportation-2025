@@ -1,7 +1,8 @@
 # AI for Transportation | Recitation 4 - Generative AI for Urban Planning
 
-[**Homework**](../../homeworks/homework_4.pdf)
+[**Worksheet**](./worksheet_4.pdf)
 [**Recitation Slides**](./recitation_4_slides.pdf)
+**Recitation Recording TBD**
 [**Lecture**](../../lectures/lecture_4.md)
 
 <a target="_blank" href="https://colab.research.google.com/github/jtl-transit/UAI-Transportation-2025/blob/main/recitations/recitation_4/recitation_4_code.ipynb">

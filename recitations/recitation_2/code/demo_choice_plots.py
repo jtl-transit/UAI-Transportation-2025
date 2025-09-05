@@ -74,7 +74,7 @@ def demo_choice_probability_plots():
         }
     ]
     
-    alternative_names = ['Public Transport', 'Private Transport']
+    alternative_names = ['Private Transport', 'Public Transport']
     
     # Generate plots for each scenario
     for scenario in test_scenarios:
